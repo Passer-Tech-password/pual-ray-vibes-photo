@@ -160,7 +160,7 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden ring-1 ring-accent/20 hover:ring-accent transition-shadow ${
+              className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden ring-1 ring-accent/20 hover:ring-accent transition-shadow h-full flex flex-col ${
                 pkg.popular ? "ring-2 ring-accent" : ""
               }`}
             >
@@ -172,7 +172,7 @@ export default function PricingPage() {
                 </div>
               )}
 
-              <div className="p-6">
+              <div className="p-6 flex flex-col h-full">
                 <div className="text-center mb-6">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{pkg.name}</h3>
                   <div className="flex items-baseline justify-center">
@@ -193,7 +193,7 @@ export default function PricingPage() {
 
                 <button
                   onClick={() => handlePackageSelect(pkg.id)}
-                  className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+                  className={`mt-auto w-full py-3 px-4 rounded-lg font-medium transition-colors ring-1 ring-accent/40 hover:ring-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                     pkg.popular
                       ? "bg-black text-white hover:bg-gray-800"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -248,14 +248,14 @@ export default function PricingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <div className="rounded-lg p-4 ring-1 ring-accent/15 dark:ring-accent/25 mb-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">What's included in the editing?</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 inline-block ring-1 ring-accent/20 dark:ring-accent/30 px-2 py-1 rounded">What's included in the editing?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   All packages include color correction, exposure adjustment, and basic retouching. Premium packages include advanced skin smoothing and object removal.
                 </p>
               </div>
 
               <div className="rounded-lg p-4 ring-1 ring-accent/15 dark:ring-accent/25">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">How long does delivery take?</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 inline-block ring-1 ring-accent/20 dark:ring-accent/30 px-2 py-1 rounded">How long does delivery take?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Delivery times vary by package: Basic (2 weeks), Standard (1 week), Premium (5 days), Wedding (2 weeks). Rush delivery available as an add-on.
                 </p>
@@ -263,14 +263,14 @@ export default function PricingPage() {
             </div>
             <div>
               <div className="rounded-lg p-4 ring-1 ring-accent/15 dark:ring-accent/25 mb-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Do you travel for shoots?</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 inline-block ring-1 ring-accent/20 dark:ring-accent/30 px-2 py-1 rounded">Do you travel for shoots?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Yes! Travel within Lagos is included. Outside Lagos, travel fees apply based on distance and accommodation needs.
                 </p>
               </div>
 
               <div className="rounded-lg p-4 ring-1 ring-accent/15 dark:ring-accent/25">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Can we customize a package?</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 inline-block ring-1 ring-accent/20 dark:ring-accent/30 px-2 py-1 rounded">Can we customize a package?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Absolutely! Contact us to discuss your specific needs and we'll create a custom package just for you.
                 </p>
@@ -292,16 +292,16 @@ export default function PricingPage() {
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             Contact us today to discuss your photography needs and secure your preferred date.
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/booking"
-              className="px-8 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              className="px-8 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors ring-1 ring-accent/20 dark:ring-accent/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full sm:w-auto"
             >
               Book Now
             </a>
             <a
               href="/contact-Us"
-              className="px-8 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-8 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ring-1 ring-accent/20 dark:ring-accent/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full sm:w-auto"
             >
               Contact Us
             </a>

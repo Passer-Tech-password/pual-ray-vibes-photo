@@ -16,11 +16,11 @@ export default function GalleryGrid({ images, onDelete }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {images.map((img, i) => (
           <motion.div key={img.path ?? i} initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}>
-            <div className="rounded-xl ring-1 ring-accent/30 hover:ring-accent transition-shadow shadow-sm hover:shadow-md">
+            <div className="relative overflow-hidden rounded-xl ring-1 ring-accent/30 hover:ring-accent transition-shadow shadow-sm hover:shadow-md aspect-[4/3]">
               <img
                 src={img.url}
                 onClick={() => openAt(i)}
-                className="w-full h-40 sm:h-56 md:h-64 object-cover rounded-xl cursor-pointer"
+                className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               />
             </div>
             {onDelete && img.path && (
