@@ -1,0 +1,38 @@
+type Photographer @table {
+  displayName: String!
+  createdAt: Timestamp!
+  email: String
+  photoUrl: String
+  bio: String
+  websiteUrl: String
+}
+
+type Gallery @table {
+  photographer: Photographer!
+  name: String!
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  description: String
+  isPrivate: Boolean
+}
+
+type Image @table {
+  photographer: Photographer!
+  gallery: Gallery
+  imageUrl: String!
+  thumbnailUrl: String!
+  uploadDate: Date!
+  title: String
+  description: String
+  aperture: String
+  shutterSpeed: String
+  iso: Int
+  focalLength: String
+}
+
+type GalleryImage @table(key: ["gallery", "image"]) {
+  gallery: Gallery!
+  image: Image!
+  position: Int!
+  caption: String
+}

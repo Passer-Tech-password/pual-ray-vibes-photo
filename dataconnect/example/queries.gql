@@ -1,0 +1,33 @@
+mutation CreatePhotographer @auth(level: USER) {
+  photographer_insert(data: {
+    displayName: "New Photographer",
+    createdAt_expr: "request.time",
+    id_expr: "uuidV4()"
+  })
+}
+
+query GetPublicGalleries @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  galleries(where: {isPrivate: {eq: false}}) {
+    id
+    name
+    description
+  }
+}
+
+query GetMyImages @auth(level: USER) {
+  images(where: {photographerId: {eq_expr: "auth.uid"}}) {
+    id
+    title
+    imageUrl
+    thumbnailUrl
+  }
+}
+
+mutation UpdateImage($id: UUID!, $title: String) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  image_update(
+    id: $id,
+    data: {
+      title: $title
+    }
+  )
+}

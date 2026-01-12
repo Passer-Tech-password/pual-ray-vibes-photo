@@ -1,0 +1,60 @@
+mutation SeedDatabase @transaction @auth(level: NO_ACCESS) {
+  photographer_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      displayName: "John Doe",
+      createdAt: "2024-01-01T00:00:00Z"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      displayName: "Jane Smith",
+      createdAt: "2024-01-02T00:00:00Z"
+    }
+  ])
+  gallery_insertMany(data: [
+    {
+      id: "650e8400-e29b-41d4-a716-446655440000",
+      photographerId: "550e8400-e29b-41d4-a716-446655440000",
+      name: "Landscapes",
+      createdAt: "2024-01-03T00:00:00Z",
+      updatedAt: "2024-01-03T00:00:00Z"
+    },
+    {
+      id: "650e8400-e29b-41d4-a716-446655440001",
+      photographerId: "550e8400-e29b-41d4-a716-446655440001",
+      name: "Portraits",
+      createdAt: "2024-01-04T00:00:00Z",
+      updatedAt: "2024-01-04T00:00:00Z"
+    }
+  ])
+  image_insertMany(data: [
+    {
+      id: "750e8400-e29b-41d4-a716-446655440000",
+      photographerId: "550e8400-e29b-41d4-a716-446655440000",
+      galleryId: "650e8400-e29b-41d4-a716-446655440000",
+      imageUrl: "https://example.com/image1.jpg",
+      thumbnailUrl: "https://example.com/image1_thumb.jpg",
+      uploadDate: "2024-01-05"
+    },
+    {
+      id: "750e8400-e29b-41d4-a716-446655440001",
+      photographerId: "550e8400-e29b-41d4-a716-446655440001",
+      galleryId: "650e8400-e29b-41d4-a716-446655440001",
+      imageUrl: "https://example.com/image2.jpg",
+      thumbnailUrl: "https://example.com/image2_thumb.jpg",
+      uploadDate: "2024-01-06"
+    }
+  ])
+  galleryImage_insertMany(data: [
+    {
+      galleryId: "650e8400-e29b-41d4-a716-446655440000",
+      imageId: "750e8400-e29b-41d4-a716-446655440000",
+      position: 1
+    },
+    {
+      galleryId: "650e8400-e29b-41d4-a716-446655440001",
+      imageId: "750e8400-e29b-41d4-a716-446655440001",
+      position: 2
+    }
+  ])
+}
