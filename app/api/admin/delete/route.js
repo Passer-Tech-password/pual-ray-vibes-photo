@@ -1,13 +1,13 @@
 // app/api/admin/delete/route.js
 import { NextResponse } from "next/server";
-import admin from "../../_lib/firebaseAdmin"; // adjust path if needed
+import admin from "../../_lib/firebase-admin";
 
 export async function POST(req) {
   try {
     // Read token from cookie 'fb_token' or Authorization header
     const cookie = req.headers.get("cookie") ?? "";
     const match = cookie.match(/fb_token=([^;]+)/);
-    const token = match ? match[1] : null;
+    let token = match ? match[1] : null;
 
     if (!token) {
       // fallback: Authorization header Bearer <token>
