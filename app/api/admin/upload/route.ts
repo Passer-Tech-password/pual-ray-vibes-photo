@@ -3,7 +3,9 @@ import { adminAuth, adminDB, adminStorage } from "@/lib/firebase-admin";
 
 export async function POST(req: Request) {
   try {
-    const token = req.headers.get("cookie")?.split("firebase-token=")[1];
+    const cookie = req.headers.get("cookie") ?? "";
+    const match = cookie.match(/(?:^|;)\s*firebase-token=([^;]+)/);
+    const token = match ? match[1] : null;
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     // Verify token
@@ -25,7 +27,7 @@ export async function POST(req: Request) {
 
     const filename = `${section}/${Date.now()}-${file.name}`;
 
-    const bucket = adminStorage.bucket();
+    const bucket = adminStorage;
     const upload = bucket.file(filename);
 
     await upload.save(buffer, {

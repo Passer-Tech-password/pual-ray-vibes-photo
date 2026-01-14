@@ -1,6 +1,6 @@
 // app/api/admin/delete/route.js
 import { NextResponse } from "next/server";
-import admin from "../../_lib/firebase-admin";
+import { adminAuth, adminStorage } from "@/lib/firebase-admin";
 
 export async function POST(req) {
   try {
@@ -20,7 +20,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     // Verify ID token
-    const decoded = await admin.auth().verifyIdToken(token);
+    const decoded = await adminAuth.verifyIdToken(token);
     // Optionally check uid/email for admin role:
     const allowedAdmins = [
       process.env.ADMIN_UID || "",
@@ -39,7 +39,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Missing path" }, { status: 400 });
 
     // Delete file from Cloud Storage
-    const bucket = admin.storage().bucket();
+    const bucket = adminStorage;
     const file = bucket.file(path); // path like "gallery/lifestyle/1654323-photo.jpg"
     await file.delete();
 
