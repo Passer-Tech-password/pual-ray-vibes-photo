@@ -1,8 +1,8 @@
-import admin from "./firebaseAdmin";
+import { adminAuth } from "@/lib/firebase-admin";
 
 export async function verifyFirebaseToken(token: string) {
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
+    const decoded = await adminAuth.verifyIdToken(token);
     return { valid: true, decoded };
   } catch (error) {
     return { valid: false };
