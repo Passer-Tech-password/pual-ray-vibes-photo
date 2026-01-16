@@ -13,7 +13,8 @@ export async function POST(req: Request) {
 
     // Check admin role in Firestore
     const roleDoc = await adminDB.collection("roles").doc(decoded.uid).get();
-    if (!roleDoc.exists || roleDoc.data().role !== "admin") {
+    const role = roleDoc.data()?.role as string | undefined;
+    if (!roleDoc.exists || role !== "admin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -39,6 +40,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url });
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
