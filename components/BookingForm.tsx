@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface BookingFormProps {
   selectedDate: Date;
@@ -23,6 +24,7 @@ export default function BookingForm({ selectedDate, selectedTime, selectedPackag
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -60,6 +62,7 @@ export default function BookingForm({ selectedDate, selectedTime, selectedPackag
           guests: "1-2",
           duration: "1 hour"
         });
+        router.push("/");
       } else {
         setSubmitStatus("error");
       }

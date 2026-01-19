@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Transporter } from "nodemailer";
+import nodemailer from "nodemailer";
 
 interface BookingRequest {
   name: string;
@@ -65,6 +67,56 @@ class BookingRequestBuilder {
   }
 }
 
+async function sendBookingEmails(body: BookingRequest, bookingDate: Date) {
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT ?? 0);
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  const secure = String(process.env.SMTP_SECURE ?? "false").toLowerCase() === "true";
+
+  if (!ownerEmail || !host || !port || !user || !pass) {
+    console.warn("Email not configured. Set OWNER_EMAIL, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS.");
+    return;
+  }
+
+  const transporter: Transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+  });
+
+  const subject = `New Booking: ${body.sessionType} on ${bookingDate.toLocaleDateString()} at ${body.time}`;
+  const text = [
+    `New booking request`,
+    `Name: ${body.name}`,
+    `Email: ${body.email}`,
+    `Phone: ${body.phone}`,
+    `Session: ${body.sessionType}`,
+    `Date: ${bookingDate.toLocaleDateString()} ${body.time}`,
+    `Guests: ${body.guests}`,
+    `Duration: ${body.duration}`,
+    `Location: ${body.location}`,
+    `Message: ${body.message}`,
+  ].join("\n");
+
+  await transporter.sendMail({
+    from: `"Photo Portfolio" <${user}>`,
+    to: ownerEmail,
+    replyTo: body.email,
+    subject,
+    text,
+  });
+
+  await transporter.sendMail({
+    from: `"Photo Portfolio" <${user}>`,
+    to: body.email,
+    subject: "We received your booking request",
+    text: `Hi ${body.name},\n\nThanks for your booking request for ${body.sessionType} on ${bookingDate.toLocaleDateString()} at ${body.time}.\nWe will contact you within 24 hours to confirm.\n\nBest,\nPhoto Portfolio`,
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const raw = await request.json();
@@ -82,12 +134,13 @@ export async function POST(request: NextRequest) {
     // 3. Send notification email to photographer
     // 4. Check availability
     
-    // For now, we'll simulate a successful booking
-    console.log("New booking request:", {
-      ...body,
-      bookingDate,
-      timestamp: new Date().toISOString(),
-    });
+    console.log("New booking request:", { ...body, bookingDate, timestamp: new Date().toISOString() });
+
+    try {
+      await sendBookingEmails(body, bookingDate);
+    } catch (mailError) {
+      console.error("Email sending failed:", mailError);
+    }
 
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 1000));
