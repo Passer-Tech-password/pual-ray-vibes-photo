@@ -66,14 +66,6 @@ export default function Navbar() {
 
           {/* Right Section */}
           <div className="absolute inset-y-0 right-0 flex items-center gap-3 pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {/* Admin Button */}
-            <Link
-              href="/admin"
-              className="hidden sm:inline-block bg-brand text-white px-4 py-1.5 rounded-full hover:bg-brand-muted transition"
-            >
-              Admin
-            </Link>
-
             {/* Theme Toggle */}
             <ThemeToggle />
           </div>
@@ -98,13 +90,6 @@ export default function Navbar() {
           })}
 
           <div className="flex items-center gap-3 pt-2">
-            <Link
-              href="/admin"
-              className="bg-brand text-white px-3 py-1 rounded-full hover:bg-brand-muted transition"
-            >
-              Admin
-            </Link>
-
             <ThemeToggle />
           </div>
         </div>

@@ -1,6 +1,7 @@
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Nav from "@/components/Navbar";
+import ToastProvider from "@/components/ToastProvider";
 
 export const metadata = {
   title:
@@ -47,14 +48,19 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#f1f5f9] dark:from-brand.soft dark:to-[#0b1220] text-gray-900 dark:text-gray-100 antialiased">
         <ThemeProvider>
+          <ToastProvider />
           <Nav />
           <main className="pt-20">
             <div className="max-w-6xl mx-auto px-4">{children}</div>
           </main>
           <footer className="mt-16 border-t border-gray-200 dark:border-white/10">
             <div className="max-w-6xl mx-auto px-4 py-8 flex items-center justify-between">
-              <span className="font-semibold text-brand dark:text-white">APD.by Paul-Ray-vibes</span>
-              <span className="text-sm text-gray-600 dark:text-gray-400">© {new Date().getFullYear()} All rights reserved</span>
+              <span className="font-semibold text-brand dark:text-white">
+                APD.by Paul-Ray-vibes
+              </span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                © {new Date().getFullYear()} All rights reserved
+              </span>
             </div>
           </footer>
         </ThemeProvider>

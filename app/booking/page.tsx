@@ -11,6 +11,8 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [step, setStep] = useState<"calendar" | "form">("calendar");
   const [selectedPackage, setSelectedPackage] = useState<string>("");
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
   useEffect(() => {
     const packageParam = searchParams.get('package');
@@ -18,6 +20,21 @@ export default function BookingPage() {
       setSelectedPackage(packageParam);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      setIsLoadingSlots(true);
+      fetch(`/api/booking?date=${selectedDate.toISOString()}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setBookedSlots(data.bookedSlots || []);
+        })
+        .catch((err) => console.error("Failed to fetch slots:", err))
+        .finally(() => setIsLoadingSlots(false));
+    } else {
+      setBookedSlots([]);
+    }
+  }, [selectedDate]);
 
   const timeSlots = [
     "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -89,21 +106,33 @@ export default function BookingPage() {
                   className="mt-6"
                 >
                   <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">Available Time Slots</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    {timeSlots.map((time) => (
-                      <button
-                        key={time}
-                        onClick={() => handleTimeSelect(time)}
-                        className={`px-4 py-2 rounded border transition-colors ${
-                          selectedTime === time
-                            ? "bg-black text-white border-black"
-                            : "hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
-                        }`}
-                      >
-                        {time}
-                      </button>
-                    ))}
-                  </div>
+                  {isLoadingSlots ? (
+                    <div className="flex justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                      {timeSlots.map((time) => {
+                        const isBooked = bookedSlots.includes(time);
+                        return (
+                          <button
+                            key={time}
+                            onClick={() => handleTimeSelect(time)}
+                            disabled={isBooked}
+                            className={`px-4 py-2 rounded border transition-colors ${
+                              selectedTime === time
+                                ? "bg-black text-white border-black"
+                                : isBooked
+                                ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed decoration-slice line-through"
+                                : "hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
+                            }`}
+                          >
+                            {time}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </motion.div>
               )}
             </div>
