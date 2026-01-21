@@ -15,15 +15,31 @@ export default function LoginPage() {
   }
 
   return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-
-    <form action={handleLogin}         className="bg-white p-8 shadow-md rounded-lg w-full max-w-sm"
->
-      <input name="email" type="email" />
-      <input name="password" type="password" />
-      <button type="submit">Login</button>
-      {error && <p>{error}</p>}
-    </form>
-        </div>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <form
+        action={handleLogin}
+        className="bg-white p-8 shadow-md rounded-lg w-full max-w-sm"
+      >
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          className="w-full border p-2 mb-4 rounded"
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          className="w-full border p-2 mb-4 rounded"
+        />
+        <button
+          type="submit"
+          className="w-full bg-black text-white p-2 rounded"
+        >
+          Login
+        </button>
+        {error && <p>{error}</p>}
+      </form>
+    </div>
   );
 }

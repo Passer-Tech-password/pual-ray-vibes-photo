@@ -107,7 +107,11 @@ export default function AdminPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
           >
-            <img src={img.url} className="rounded shadow" />
+            <img
+              src={img.url}
+              alt={img.section || "Gallery Image"}
+              className="rounded shadow"
+            />
           </motion.div>
         ))}
       </div>

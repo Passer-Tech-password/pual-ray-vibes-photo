@@ -104,7 +104,7 @@ export default function TestimonialsCarousel() {
   };
 
   return (
-    <section className="py-16 bg-gray-50 dark:bg-brand.soft">
+    <section className="py-16 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -117,7 +117,7 @@ export default function TestimonialsCarousel() {
             What Our Clients Say
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Don't just take our word for it. Here's what our satisfied clients have to say about their experience with us.
+            Don&apos;t just take our word for it. Here&apos;s what our satisfied clients have to say about their experience with us.
           </p>
         </motion.div>
 
@@ -134,9 +134,11 @@ export default function TestimonialsCarousel() {
                 className="w-full"
               >
                 <div className="flex items-center mb-6">
-                  <div className="w-16 h-16 bg-gray-200 dark:bg-gray-800 rounded-full mr-4 flex items-center justify-center text-2xl font-bold text-gray-600 dark:text-gray-200">
-                    {testimonials[currentIndex].name.charAt(0)}
-                  </div>
+                  <img
+                    src={testimonials[currentIndex].image}
+                    alt={testimonials[currentIndex].name}
+                    className="w-16 h-16 rounded-full object-cover mr-4 flex-shrink-0"
+                  />
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                       {testimonials[currentIndex].name}
@@ -147,7 +149,7 @@ export default function TestimonialsCarousel() {
                 </div>
 
                 <blockquote className="text-lg text-gray-700 dark:text-gray-200 mb-6 italic">
-                  "{testimonials[currentIndex].content}"
+                  &quot;{testimonials[currentIndex].content}&quot;
                 </blockquote>
 
                 <div className="flex items-center">

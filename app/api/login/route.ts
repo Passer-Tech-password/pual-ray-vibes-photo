@@ -6,14 +6,15 @@ export async function POST(req: Request) {
   const password = data.get("password");
 
   // Validate user manually
-  const valid = email === "chukwunebumsimeon@gmail.com" && password === "Clement2000";
+  const valid =
+    email === "chukwunebumsimeon@gmail.com" && password === "Clement2000";
 
   if (!valid) {
     return Response.json({ success: false, message: "Invalid credentials" });
   }
 
   // ✅ Setting cookie here works
-  cookies().set("token", "abc123", { httpOnly: true });
+  (await cookies()).set("token", "abc123", { httpOnly: true });
 
   return Response.json({ success: true });
 }

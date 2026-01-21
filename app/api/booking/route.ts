@@ -105,6 +105,9 @@ async function sendBookingEmails(body: BookingRequest, bookingDate: Date) {
     return;
   }
 
+  // Replace this with your actual logo URL (must be an absolute URL, e.g., https://your-site.com/logo.png)
+  const logoUrl = "https://via.placeholder.com/200x60/000000/ffffff?text=APD.by+Paul-Ray-vibes";
+
   const transporter: Transporter = nodemailer.createTransport({
     host,
     port,
@@ -112,9 +115,9 @@ async function sendBookingEmails(body: BookingRequest, bookingDate: Date) {
     auth: { user, pass },
   });
 
-  const subject = `New Booking: ${body.sessionType} on ${bookingDate.toLocaleDateString()} at ${body.time}`;
-  const text = [
-    `New booking request`,
+  // 1. Email to Owner (You)
+  const ownerText = [
+    `New Booking Request`,
     `Name: ${body.name}`,
     `Email: ${body.email}`,
     `Phone: ${body.phone}`,
@@ -126,19 +129,68 @@ async function sendBookingEmails(body: BookingRequest, bookingDate: Date) {
     `Message: ${body.message}`,
   ].join("\n");
 
+  const ownerHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <img src="${logoUrl}" alt="APD.by Paul-Ray-vibes" style="max-width: 200px; height: auto;">
+      </div>
+      <h2>New Booking Request</h2>
+      <p>You have received a new booking request from your website.</p>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Name:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.name}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Email:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.email}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Phone:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.phone}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Session Type:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.sessionType}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Date:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${bookingDate.toLocaleDateString()}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Time:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.time}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Guests:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.guests}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Duration:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.duration}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Location:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.location}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Message:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${body.message}</td></tr>
+      </table>
+    </div>
+  `;
+
   await transporter.sendMail({
     from: `"Photo Portfolio" <${user}>`,
     to: ownerEmail,
     replyTo: body.email,
-    subject,
-    text,
+    subject: `New Booking Request: ${body.name} - ${body.sessionType}`,
+    text: ownerText,
+    html: ownerHtml,
   });
+
+  // 2. Email to Customer (Confirmation)
+  const customerText = `Hi ${body.name},\n\nThanks for your booking request for ${body.sessionType} on ${bookingDate.toLocaleDateString()} at ${body.time}.\nWe will contact you within 24 hours to confirm.\n\nBest,\nAPD.by Paul-Ray-vibes Photography`;
+  
+  const customerHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <img src="${logoUrl}" alt="APD.by Paul-Ray-vibes" style="max-width: 200px; height: auto;">
+      </div>
+      <h2 style="color: #333;">Booking Request Received</h2>
+      <p>Hi ${body.name},</p>
+      <p>Thank you for requesting a <strong>${body.sessionType}</strong> session with us.</p>
+      <p>We have received your details and will review your request. We aim to get back to you within 24 hours to confirm the booking.</p>
+      
+      <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <h3 style="margin-top: 0; font-size: 16px;">Request Details:</h3>
+        <p style="margin: 5px 0;"><strong>Date:</strong> ${bookingDate.toLocaleDateString()}</p>
+        <p style="margin: 5px 0;"><strong>Time:</strong> ${body.time}</p>
+        <p style="margin: 5px 0;"><strong>Location:</strong> ${body.location || 'To be discussed'}</p>
+      </div>
+
+      <p>If you have any urgent questions, please reply to this email.</p>
+      <p>Best regards,<br>APD.by Paul-Ray-vibes Photography</p>
+    </div>
+  `;
 
   await transporter.sendMail({
     from: `"Photo Portfolio" <${user}>`,
     to: body.email,
     subject: "We received your booking request",
-    text: `Hi ${body.name},\n\nThanks for your booking request for ${body.sessionType} on ${bookingDate.toLocaleDateString()} at ${body.time}.\nWe will contact you within 24 hours to confirm.\n\nBest,\nPhoto Portfolio`,
+    text: customerText,
+    html: customerHtml,
   });
 }
 

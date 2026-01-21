@@ -15,7 +15,7 @@ export default function BookingPage() {
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
   useEffect(() => {
-    const packageParam = searchParams.get('package');
+    const packageParam = searchParams.get("package");
     if (packageParam) {
       setSelectedPackage(packageParam);
     }
@@ -25,11 +25,11 @@ export default function BookingPage() {
     if (selectedDate) {
       setIsLoadingSlots(true);
       fetch(`/api/booking?date=${selectedDate.toISOString()}`)
-        .then((res) => res.json())
-        .then((data) => {
+        .then(res => res.json())
+        .then(data => {
           setBookedSlots(data.bookedSlots || []);
         })
-        .catch((err) => console.error("Failed to fetch slots:", err))
+        .catch(err => console.error("Failed to fetch slots:", err))
         .finally(() => setIsLoadingSlots(false));
     } else {
       setBookedSlots([]);
@@ -37,8 +37,15 @@ export default function BookingPage() {
   }, [selectedDate]);
 
   const timeSlots = [
-    "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
-    "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"
+    "9:00 AM",
+    "10:00 AM",
+    "11:00 AM",
+    "12:00 PM",
+    "1:00 PM",
+    "2:00 PM",
+    "3:00 PM",
+    "4:00 PM",
+    "5:00 PM",
   ];
 
   const handleDateSelect = (date: Date) => {
@@ -68,7 +75,9 @@ export default function BookingPage() {
         transition={{ duration: 0.6 }}
         className="max-w-4xl mx-auto"
       >
-        <h1 className="text-4xl font-bold text-center mb-2 text-gray-900 dark:text-white">Book a Session</h1>
+        <h1 className="text-4xl font-bold text-center mb-2 text-gray-900 dark:text-white">
+          Book a Session
+        </h1>
         <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
           Schedule your photography session with us
         </p>
@@ -77,10 +86,12 @@ export default function BookingPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-center"
+            className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-6 text-center"
           >
-            <p className="text-yellow-800">
-              <span className="font-semibold">Selected Package:</span> {selectedPackage.charAt(0).toUpperCase() + selectedPackage.slice(1)}
+            <p className="text-yellow-800 dark:text-yellow-200">
+              <span className="font-semibold">Selected Package:</span>{" "}
+              {selectedPackage.charAt(0).toUpperCase() +
+                selectedPackage.slice(1)}
             </p>
           </motion.div>
         )}
@@ -92,12 +103,14 @@ export default function BookingPage() {
             transition={{ duration: 0.5 }}
           >
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Select Date & Time</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+                Select Date & Time
+              </h2>
               <Calendar
                 selectedDate={selectedDate}
                 onDateSelect={handleDateSelect}
               />
-              
+
               {selectedDate && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
@@ -105,14 +118,16 @@ export default function BookingPage() {
                   transition={{ duration: 0.3 }}
                   className="mt-6"
                 >
-                  <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">Available Time Slots</h3>
+                  <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+                    Available Time Slots
+                  </h3>
                   {isLoadingSlots ? (
                     <div className="flex justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                      {timeSlots.map((time) => {
+                      {timeSlots.map(time => {
                         const isBooked = bookedSlots.includes(time);
                         return (
                           <button
@@ -123,8 +138,8 @@ export default function BookingPage() {
                               selectedTime === time
                                 ? "bg-black text-white border-black"
                                 : isBooked
-                                ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed decoration-slice line-through"
-                                : "hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
+                                  ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed decoration-slice line-through"
+                                  : "hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
                             }`}
                           >
                             {time}
@@ -145,7 +160,8 @@ export default function BookingPage() {
                 className="text-center"
               >
                 <p className="mb-4 text-gray-600 dark:text-gray-400">
-                  Selected: {selectedDate.toLocaleDateString()} at {selectedTime}
+                  Selected: {selectedDate.toLocaleDateString()} at{" "}
+                  {selectedTime}
                 </p>
                 <button
                   onClick={handleContinue}

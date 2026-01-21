@@ -8,17 +8,16 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon, BellIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function Navbar() {
-
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/about-Us", label: "About" },
+    { href: "/about-us", label: "About" },
     { href: "/gallery", label: "Gallery" },
     { href: "/pricing", label: "Pricing" },
     { href: "/booking", label: "Book Now" },
-    { href: "/contact-Us", label: "Contact" },
+    { href: "/contact-us", label: "Contact" },
   ];
 
   const pathname = usePathname();
@@ -26,7 +25,7 @@ export default function Navbar() {
   return (
     <Disclosure
       as="nav"
-      className="fixed top-0 w-full z-50 bg-white/60 dark:bg-brand.soft backdrop-blur after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-black/10 dark:after:bg-white/10"
+      className="fixed top-0 w-full z-50 bg-white/60 dark:bg-black/40 backdrop-blur after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-black/10 dark:after:bg-white/10"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
@@ -49,7 +48,9 @@ export default function Navbar() {
 
             <div className="hidden sm:ml-8 sm:flex space-x-6">
               {navLinks.map(link => {
-                const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                const active =
+                  pathname === link.href ||
+                  (link.href !== "/" && pathname.startsWith(link.href));
                 return (
                   <Link
                     key={link.href}
@@ -57,7 +58,9 @@ export default function Navbar() {
                     className={`relative text-gray-700 dark:text-gray-300 hover:text-accent transition ${active ? "text-accent" : ""}`}
                   >
                     {link.label}
-                    <span className={`absolute left-0 -bottom-1 h-0.5 w-full bg-gradient-to-r from-accent to-transparent transition-opacity ${active ? "opacity-100" : "opacity-0"}`} />
+                    <span
+                      className={`absolute left-0 -bottom-1 h-0.5 w-full bg-gradient-to-r from-accent to-transparent transition-opacity ${active ? "opacity-100" : "opacity-0"}`}
+                    />
                   </Link>
                 );
               })}
@@ -76,7 +79,9 @@ export default function Navbar() {
       <DisclosurePanel className="sm:hidden bg-white/70 dark:bg-black/40 backdrop-blur border-t border-gray-200 dark:border-gray-700">
         <div className="space-y-2 px-4 py-3">
           {navLinks.map(link => {
-            const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+            const active =
+              pathname === link.href ||
+              (link.href !== "/" && pathname.startsWith(link.href));
             return (
               <DisclosureButton
                 key={link.href}

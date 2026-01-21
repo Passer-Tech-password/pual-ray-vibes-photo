@@ -42,7 +42,7 @@ export default function BookingForm({
     >,
   ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name as keyof typeof prev]: value }));
     // Clear error when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
@@ -88,27 +88,41 @@ export default function BookingForm({
       }),
     });
 
-    await toast.promise(
-      bookingPromise.then(async res => {
-        if (res.ok) {
-          return res.json();
-        }
-        const errorData = await res.json().catch(() => ({ error: "An unknown error occurred." }));
-        throw new Error(errorData.error || "Something went wrong.");
-      }),
-      {
-        loading: "Sending booking request...",
-        success: (data) => {
-          setSubmitStatus("success"); // To show the success screen
-          setFormData({ name: "", email: "", phone: "", sessionType: "lifestyle", location: "", message: "", guests: "1-2", duration: "1 hour" });
-          return data.message || "Booking request sent successfully!";
+    await toast
+      .promise(
+        bookingPromise.then(async res => {
+          if (res.ok) {
+            return res.json();
+          }
+          const errorData = await res
+            .json()
+            .catch(() => ({ error: "An unknown error occurred." }));
+          throw new Error(errorData.error || "Something went wrong.");
+        }),
+        {
+          loading: "Sending booking request...",
+          success: data => {
+            setSubmitStatus("success"); // To show the success screen
+            setFormData({
+              name: "",
+              email: "",
+              phone: "",
+              sessionType: "lifestyle",
+              location: "",
+              message: "",
+              guests: "1-2",
+              duration: "1 hour",
+            });
+            return data.message || "Booking request sent successfully!";
+          },
+          error: err =>
+            err.message || "Something went wrong. Please try again.",
         },
-        error: (err) => err.message || "Something went wrong. Please try again.",
-      }
-    ).catch(() => {
-      // Catch block to prevent unhandled promise rejection,
-      // react-hot-toast already handles displaying the error.
-    });
+      )
+      .catch(() => {
+        // Catch block to prevent unhandled promise rejection,
+        // react-hot-toast already handles displaying the error.
+      });
 
     setIsSubmitting(false);
   };
@@ -157,8 +171,8 @@ export default function BookingForm({
           Booking Request Sent!
         </h2>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
-          Thank you for your booking request. We'll contact you within 24 hours
-          to confirm your session details.
+          Thank you for your booking request. We&apos;ll contact you within 24
+          hours to confirm your session details.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <button
@@ -314,10 +328,14 @@ export default function BookingForm({
                 value={formData.name}
                 onChange={handleInputChange}
                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-black focus:border-transparent ${
-                  errors.name ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                  errors.name
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
               />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+              )}
             </div>
 
             <div>
@@ -334,10 +352,14 @@ export default function BookingForm({
                 value={formData.email}
                 onChange={handleInputChange}
                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-black focus:border-transparent ${
-                  errors.email ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                  errors.email
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
             </div>
           </div>
 
@@ -356,10 +378,14 @@ export default function BookingForm({
                 value={formData.phone}
                 onChange={handleInputChange}
                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-black focus:border-transparent ${
-                  errors.phone ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                  errors.phone
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
               />
-              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              {errors.phone && (
+                <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+              )}
             </div>
 
             <div>
