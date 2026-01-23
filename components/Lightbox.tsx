@@ -1,14 +1,40 @@
 "use client";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 
-export default function Lightbox({ open, images = [], index = 0, onClose, onPrev, onNext }) {
+/* ✅ Image type must match GalleryGrid */
+interface GalleryImage {
+  url: string;
+  path?: string;
+  alt?: string;
+}
+
+/* ✅ Properly typed props */
+interface LightboxProps {
+  open: boolean;
+  images: GalleryImage[];
+  index: number;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
+export default function Lightbox({
+  open,
+  images,
+  index,
+  onClose,
+  onPrev,
+  onNext,
+}: LightboxProps) {
   useEffect(() => {
-    function onKey(e) {
+    function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft") onPrev();
       if (e.key === "ArrowRight") onNext();
     }
+
     if (open) window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose, onPrev, onNext]);
@@ -35,14 +61,31 @@ export default function Lightbox({ open, images = [], index = 0, onClose, onPrev
           >
             <img
               src={images[index]?.url}
-              alt=""
+              alt={images[index]?.alt ?? "Gallery image"}
               className="w-full max-h-[80vh] object-contain rounded"
             />
 
             {/* controls */}
-            <button onClick={onClose} className="absolute top-3 right-3 bg-black/50 text-white p-2 rounded">✕</button>
-            <button onClick={onPrev} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded">◀</button>
-            <button onClick={onNext} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded">▶</button>
+            <button
+              onClick={onClose}
+              className="absolute top-3 right-3 bg-black/50 text-white p-2 rounded"
+            >
+              ✕
+            </button>
+
+            <button
+              onClick={onPrev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded"
+            >
+              ◀
+            </button>
+
+            <button
+              onClick={onNext}
+              className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded"
+            >
+              ▶
+            </button>
           </motion.div>
         </motion.div>
       )}

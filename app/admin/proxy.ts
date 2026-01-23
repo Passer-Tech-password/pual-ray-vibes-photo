@@ -4,9 +4,11 @@ import { verifyFirebaseToken } from "@/lib/verifyToken";
 
 export async function proxy(req: NextRequest) {
   const token = req.cookies.get("firebase-token")?.value;
+
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
+
   try {
     await verifyFirebaseToken(token);
     return NextResponse.next();

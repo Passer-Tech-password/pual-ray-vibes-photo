@@ -6,7 +6,7 @@ import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 export default function HomePage() {
   return (
     <>
-      <section className="min-h-[70vh] flex flex-col items-center justify-center text-center">
+      <section className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

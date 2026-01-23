@@ -68,7 +68,7 @@ export default function BookingPage() {
   };
 
   return (
-    <section className="min-h-screen py-12">
+    <section className="min-h-screen py-12 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

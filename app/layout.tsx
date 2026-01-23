@@ -16,11 +16,11 @@ export const metadata = {
     "Nigerian photography",
   ],
   openGraph: {
-    title: "APD.by-Paul-Ray-vibes-Photography",
+    title: "Art.by-Paul-Ray-vibes-Photography",
     description:
       "Professional lifestyle, event, and outdoor photography. Visit our gallery.",
     url: "https://yourwebsite.com",
-    siteName: "APD.by-Paul-Ray-vibes-Photography",
+    siteName: "Art.by-Paul-Ray-vibes-Photography",
     images: [
       {
         url: "/preview.jpg",
@@ -56,7 +56,7 @@ export default function RootLayout({
           <footer className="mt-16 border-t border-gray-200 dark:border-white/10">
             <div className="max-w-6xl mx-auto px-4 py-8 flex items-center justify-between">
               <span className="font-semibold text-brand dark:text-white">
-                APD.by Paul-Ray-vibes
+                Art.by Paul-Ray-vibes
               </span>
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 © {new Date().getFullYear()} All rights reserved

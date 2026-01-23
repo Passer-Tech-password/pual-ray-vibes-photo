@@ -2,7 +2,7 @@
 
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { cookies } from "next/headers";
-import { auth } from "@/firebase";
+import { auth } from "@/lib/firebase";
 
 export async function loginAction(email: string, password: string) {
   try {
@@ -14,12 +14,7 @@ export async function loginAction(email: string, password: string) {
 
     const token = await userCredential.user.getIdToken();
 
-    // ✅ FIX: await cookies()
-    const cookieStore = await cookies();
-
-    cookieStore.set({
-      name: "firebase-token",
-      value: token,
+    cookies().set("admin-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -28,7 +23,7 @@ export async function loginAction(email: string, password: string) {
     });
 
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch {
+    return { success: false, message: "Invalid credentials" };
   }
 }

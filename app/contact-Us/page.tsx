@@ -1,6 +1,6 @@
 export default function ContactUs() {
   return (
-    <div className="max-w-xl mx-auto">
+    <div className="max-w-xl mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold text-brand dark:text-white">Contact Us</h1>
       <div className="h-1.5 w-16 bg-accent rounded-full mt-2 mb-6"></div>
 

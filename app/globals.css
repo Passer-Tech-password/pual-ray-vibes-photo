@@ -2,8 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
+@layer base {
+  a {
+    @apply no-underline;
+  }
+  
+  ul, ol, li {
+    @apply list-none;
+  }
+}
 
 /* small helpers */
 html.dark {
