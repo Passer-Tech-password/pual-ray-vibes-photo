@@ -20,7 +20,7 @@ export default function ContactUs() {
           className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
         ></textarea>
 
-        <button className="w-full bg-accent text-black p-3 rounded-full shadow-sm hover:brightness-95">
+        <button className="w-full btn btn-accent">
           Send Message
         </button>
       </form>

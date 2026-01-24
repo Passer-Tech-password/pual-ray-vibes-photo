@@ -44,10 +44,10 @@ export default function GalleryPage() {
           <button
             key={c}
             onClick={() => setCategory(c)}
-            className={`px-4 py-2 rounded-full transition-colors ${
+            className={`btn px-4 py-2 text-sm ${
               category === c
-                ? "bg-accent text-black shadow-sm"
-                : "border border-gray-300 dark:border-gray-600 hover:border-accent"
+                ? "btn-accent"
+                : "btn-outline border-gray-300 dark:border-gray-600 hover:border-accent"
             }`}
           >
             {c}

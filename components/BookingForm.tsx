@@ -177,13 +177,13 @@ export default function BookingForm({
         <div className="flex flex-wrap justify-center gap-4">
           <button
             onClick={onBack}
-            className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="btn btn-outline px-6 py-2 rounded-lg"
           >
             Book Another Session
           </button>
           <Link
             href="/"
-            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+            className="btn btn-primary px-6 py-2 rounded-lg"
           >
             Go to Homepage
           </Link>
@@ -497,9 +497,9 @@ export default function BookingForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 btn btn-primary w-full"
             >
-              {isSubmitting ? "Sending..." : "Send Booking Request"}
+              {isSubmitting ? "Processing..." : "Review Booking"}
             </button>
           </div>
         </form>

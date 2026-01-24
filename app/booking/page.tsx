@@ -165,7 +165,7 @@ export default function BookingPage() {
                 </p>
                 <button
                   onClick={handleContinue}
-                  className="px-8 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  className="btn btn-primary w-full md:w-auto"
                 >
                   Continue to Booking Form
                 </button>

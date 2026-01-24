@@ -1,14 +1,69 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand: #0f172a;
+  --color-brand-soft: #020617;
+  --color-brand-muted: #1e293b;
+  --color-brand-light: #334155;
+
+  --color-accent: #fbbf24;
+  --color-accent-hover: #f59e0b;
+  --color-accent-light: #fcd34d;
+
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #0b1220;
+}
 
 @layer base {
   a {
-    @apply no-underline;
+    @apply no-underline transition-colors duration-200;
   }
-  
-  ul, ol, li {
-    @apply list-none;
+
+  ul,
+  ol,
+  li {
+    @apply list-none p-0 m-0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-full px-6 py-3 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-95;
+  }
+
+  .btn-primary {
+    @apply bg-brand text-white hover:bg-brand-muted focus:ring-brand dark:bg-white dark:text-brand dark:hover:bg-gray-100;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-brand hover:bg-accent-hover focus:ring-accent shadow-md hover:shadow-lg;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800;
+  }
+
+  .btn-ghost {
+    @apply text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white;
+  }
+
+  .container-width {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 }
 
@@ -31,5 +86,5 @@ body,
 }
 
 body {
-  transition: background-color .25s ease;
+  transition: background-color .25s ease, color .25s ease;
 }

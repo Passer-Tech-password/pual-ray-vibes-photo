@@ -46,15 +46,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#f1f5f9] dark:from-brand.soft dark:to-[#0b1220] text-gray-900 dark:text-gray-100 antialiased">
+      <body className="min-h-screen bg-gradient-to-b from-surface-light to-gray-50 dark:from-surface-dark dark:to-brand-soft text-gray-900 dark:text-gray-100 antialiased">
         <ThemeProvider>
           <ToastProvider />
           <Nav />
           <main className="pt-20">
-            <div className="max-w-6xl mx-auto px-4">{children}</div>
+            <div className="container-width">{children}</div>
           </main>
           <footer className="mt-16 border-t border-gray-200 dark:border-white/10">
-            <div className="max-w-6xl mx-auto px-4 py-8 flex items-center justify-between">
+            <div className="container-width py-8 flex items-center justify-between">
               <span className="font-semibold text-brand dark:text-white">
                 Art.by Paul-Ray-vibes
               </span>

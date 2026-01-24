@@ -207,10 +207,10 @@ export default function PricingPage() {
 
                 <button
                   onClick={() => handlePackageSelect(pkg.id)}
-                  className={`mt-auto w-full py-3 px-4 rounded-lg font-medium transition-colors ring-1 ring-accent/40 hover:ring-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  className={`mt-auto w-full btn rounded-xl ${
                     pkg.popular
-                      ? "bg-black text-white hover:bg-gray-800"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600"
+                      ? "btn-primary"
+                      : "btn-secondary"
                   }`}
                 >
                   {pkg.buttonText}

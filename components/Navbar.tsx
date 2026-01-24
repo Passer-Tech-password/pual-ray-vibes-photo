@@ -55,12 +55,20 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`relative text-gray-700 dark:text-gray-300 hover:text-accent transition ${active ? "text-accent" : ""}`}
+                    className={`relative transition ${
+                      link.href === "/booking"
+                        ? "btn btn-primary px-5 py-2 text-sm ml-2"
+                        : `text-gray-700 dark:text-gray-300 hover:text-accent ${active ? "text-accent" : ""}`
+                    }`}
                   >
                     {link.label}
-                    <span
-                      className={`absolute left-0 -bottom-1 h-0.5 w-full bg-gradient-to-r from-accent to-transparent transition-opacity ${active ? "opacity-100" : "opacity-0"}`}
-                    />
+                    {link.href !== "/booking" && (
+                      <span
+                        className={`absolute left-0 -bottom-1 h-0.5 w-full bg-gradient-to-r from-accent to-transparent transition-opacity ${
+                          active ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    )}
                   </Link>
                 );
               })}

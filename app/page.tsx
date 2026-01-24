@@ -34,19 +34,19 @@ export default function HomePage() {
         >
           <Link
             href="/booking"
-            className="px-6 py-3 rounded-full bg-brand text-white font-medium shadow-md hover:bg-brand-muted transition-colors"
+            className="btn btn-primary"
           >
             Book a Session
           </Link>
           <Link
             href="/gallery"
-            className="px-6 py-3 rounded-full border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:border-accent hover:text-accent transition-colors"
+            className="btn btn-outline"
           >
             Explore Gallery
           </Link>
           <Link
             href="/about-Us"
-            className="px-6 py-3 rounded-full border border-transparent text-gray-700 dark:text-gray-300 hover:text-accent transition-colors"
+            className="btn btn-ghost"
           >
             About Us
           </Link>
