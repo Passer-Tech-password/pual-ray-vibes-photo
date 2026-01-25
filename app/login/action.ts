@@ -14,7 +14,7 @@ export async function loginAction(email: string, password: string) {
 
     const token = await userCredential.user.getIdToken();
 
-    cookies().set("admin-token", token, {
+    (await cookies()).set("firebase-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",

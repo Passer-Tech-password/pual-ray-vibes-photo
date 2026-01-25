@@ -29,14 +29,20 @@ export default function LoginPage() {
 
       const token = await userCred.user.getIdToken();
 
-      await fetch("/api/session", {
+      const res = await fetch("/api/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
 
+      if (!res.ok) {
+        console.error("Session API failed:", res.status, res.statusText);
+        throw new Error("Failed to create session");
+      }
+
       router.push("/admin");
-    } catch {
+    } catch (err) {
+      console.error("Login error:", err);
       setError("Invalid email or password");
     } finally {
       setLoading(false);

@@ -1,7 +1,7 @@
 // app/api/session/route.ts
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { adminAuth } from "@/lib/firebaseAdmin";
+import { adminAuth } from "@/lib/firebase-admin";
 
 export async function POST(req: Request) {
   const { token } = await req.json();
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   try {
     await adminAuth.verifyIdToken(token);
 
-    cookies().set("firebase-token", token, {
+    (await cookies()).set("firebase-token", token, {
       httpOnly: true,
       sameSite: "strict",
       path: "/",

@@ -2,11 +2,13 @@
 import { NextResponse } from "next/server";
 import { adminAuth, adminStorage } from "@/lib/firebase-admin";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req) {
   try {
     // Read token from cookie 'fb_token' or Authorization header
     const cookie = req.headers.get("cookie") ?? "";
-    const match = cookie.match(/fb_token=([^;]+)/);
+    const match = cookie.match(/firebase-token=([^;]+)/);
     let token = match ? match[1] : null;
 
     if (!token) {

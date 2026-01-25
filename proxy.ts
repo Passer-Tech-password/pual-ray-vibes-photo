@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export function middleware(req) {
+export function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
-  const token = req.cookies.get("fb_token");
+  const token = req.cookies.get("firebase-token");
 
   if (req.nextUrl.pathname.startsWith("/admin")) {
     if (!token) {

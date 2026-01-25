@@ -3,8 +3,8 @@
 import { cookies } from "next/headers";
 
 export async function logoutAction() {
-  cookies().set({
-    name: "admin-token",
+  (await cookies()).set({
+    name: "firebase-token",
     value: "",
     maxAge: 0,
     path: "/",

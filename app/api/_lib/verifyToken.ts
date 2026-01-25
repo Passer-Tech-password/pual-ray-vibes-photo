@@ -1,4 +1,4 @@
-import { adminAuth } from "@/lib/firebaseAdmin";
+import { adminAuth } from "@/lib/firebase-admin";
 
 export async function verifyFirebaseToken(token: string) {
   try {
