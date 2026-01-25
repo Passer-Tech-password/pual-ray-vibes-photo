@@ -11,17 +11,10 @@ const getFirebaseAdminApp = () => {
   const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
   
   if (!privateKey) {
-    // In build phase or if env vars are missing, return null or throw a clearer error
-    // Returning a dummy app or skipping initialization might be safer for build time
-    // providing we don't actually use it during build.
     console.warn("⚠️ FIREBASE_PRIVATE_KEY is missing. Firebase Admin not initialized.");
-    
-    // Check if we are in a build environment where we can skip this?
-    // For now, let's try to throw a clearer error to stop the build if it's critical,
-    // or return a mocked object if we want to bypass build.
-    // However, since we need to export adminAuth, we can't return null easily without breaking exports.
-    // Let's throw a descriptive error.
-    throw new Error("FIREBASE_PRIVATE_KEY is missing or invalid in .env.local");
+    // Return null to allow build to proceed (imports won't fail), 
+    // but runtime usage will fail if keys are still missing.
+    return null;
   }
 
   return initializeApp({
@@ -36,6 +29,6 @@ const getFirebaseAdminApp = () => {
 
 const adminApp = getFirebaseAdminApp();
 
-export const adminAuth = getAuth(adminApp);
-export const adminDB = getFirestore(adminApp);
-export const adminStorage = getStorage(adminApp).bucket();
+export const adminAuth = adminApp ? getAuth(adminApp) : {} as ReturnType<typeof getAuth>;
+export const adminDB = adminApp ? getFirestore(adminApp) : {} as ReturnType<typeof getFirestore>;
+export const adminStorage = adminApp ? getStorage(adminApp).bucket() : {} as ReturnType<typeof getStorage>['bucket'] extends (...args: any) => infer R ? R : never;
