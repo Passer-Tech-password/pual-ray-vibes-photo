@@ -5,7 +5,7 @@ import ToastProvider from "@/components/ToastProvider";
 
 export const metadata = {
   title:
-    "APD.by-Paul-Ray-vibes-Photography | Professional Creative Photographer",
+    "Art.by-Paul-Ray-vibes-Photography | Professional Creative Photographer",
   description:
     "A high-quality photography website showcasing lifestyle, events, family, outdoor, and portrait photography. Explore our gallery and services.",
   keywords: [
@@ -33,7 +33,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "APD.by-Paul-Ray-vibes-Photography",
+    title: "Art.by-Paul-Ray-vibes-Photography",
     description: "Professional photography portfolio website",
     images: ["/preview.jpg"],
   },
