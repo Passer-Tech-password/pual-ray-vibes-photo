@@ -13,11 +13,11 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 export default function Navbar() {
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/about-us", label: "About" },
+    { href: "/about-Us", label: "About" },
     { href: "/gallery", label: "Gallery" },
     { href: "/pricing", label: "Pricing" },
     { href: "/booking", label: "Book Now" },
-    { href: "/contact-us", label: "Contact" },
+    { href: "/contact-Us", label: "Contact" },
   ];
 
   const pathname = usePathname();
