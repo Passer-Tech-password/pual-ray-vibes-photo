@@ -24,6 +24,10 @@ const teamMembers = [
 
 export default function AboutUs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Debug log to ensure state is initialized
+  console.log("AboutUs rendered, isModalOpen:", isModalOpen);
+
   const whatsappLink =
     "https://wa.me/2348168847345?text=Hello%20I%20would%20like%20to%20book%20a%20photoshoot";
 
@@ -100,7 +104,8 @@ export default function AboutUs() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-gray-50 dark:bg-gray-800/40 rounded-3xl p-6 md:p-12"
+          onClick={() => setIsModalOpen(true)}
+          className="bg-gray-50 dark:bg-gray-800/40 rounded-3xl p-6 md:p-12 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
             <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto rounded-full overflow-hidden ring-4 ring-accent/30">
