@@ -46,7 +46,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-gradient-to-b from-surface-light to-gray-50 dark:from-surface-dark dark:to-brand-soft text-gray-900 dark:text-gray-100 antialiased">
+      <body
+        suppressHydrationWarning
+        className="min-h-screen bg-gradient-to-b from-surface-light to-gray-50 dark:from-surface-dark dark:to-brand-soft text-gray-900 dark:text-gray-100 antialiased"
+      >
         <ThemeProvider>
           <ToastProvider />
           <Nav />

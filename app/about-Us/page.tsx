@@ -23,6 +23,7 @@ const teamMembers = [
 ];
 
 export default function AboutUs() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const whatsappLink =
     "https://wa.me/2348168847345?text=Hello%20I%20would%20like%20to%20book%20a%20photoshoot";
 
