@@ -5,7 +5,7 @@ import ToastProvider from "@/components/ToastProvider";
 
 export const metadata = {
   title:
-    "Art.by-Paul-Ray-vibes-Photography | Professional Creative Photographer",
+    "Arts.by-Paul-Ray-vibes-Photography | Professional Creative Photographer",
   description:
     "A high-quality photography website showcasing lifestyle, events, family, outdoor, and portrait photography. Explore our gallery and services.",
   keywords: [
@@ -16,11 +16,11 @@ export const metadata = {
     "Nigerian photography",
   ],
   openGraph: {
-    title: "Art.by-Paul-Ray-vibes-Photography",
+    title: "Arts.by-Paul-Ray-vibes-Photography",
     description:
       "Professional lifestyle, event, and outdoor photography. Visit our gallery.",
     url: "https://yourwebsite.com",
-    siteName: "Art.by-Paul-Ray-vibes-Photography",
+    siteName: "Arts.by-Paul-Ray-vibes-Photography",
     images: [
       {
         url: "/preview.jpg",
@@ -33,7 +33,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Art.by-Paul-Ray-vibes-Photography",
+    title: "Arts.by-Paul-Ray-vibes-Photography",
     description: "Professional photography portfolio website",
     images: ["/preview.jpg"],
   },
@@ -56,7 +56,7 @@ export default function RootLayout({
           <footer className="mt-16 border-t border-gray-200 dark:border-white/10">
             <div className="container-width py-8 flex items-center justify-between">
               <span className="font-semibold text-brand dark:text-white">
-                Art.by Paul-Ray-vibes
+                Arts.by Paul-Ray-vibes
               </span>
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 © {new Date().getFullYear()} All rights reserved

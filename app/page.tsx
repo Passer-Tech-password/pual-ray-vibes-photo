@@ -13,7 +13,7 @@ export default function HomePage() {
           transition={{ duration: 0.9 }}
           className="text-4xl md:text-6xl font-extrabold leading-tight text-brand dark:text-white"
         >
-          Capture Your Moments
+          Artsbypaulray-Lifestyle & Fashion Photographer
         </motion.h1>
 
         <motion.p
@@ -22,8 +22,7 @@ export default function HomePage() {
           transition={{ delay: 0.3, duration: 0.8 }}
           className="mt-4 max-w-2xl text-gray-600 dark:text-gray-300"
         >
-          Immersive photography with storytelling — lifestyle, events, family,
-          and outdoor sessions.
+          "Timeless imagery defined by color, depth, and story."
         </motion.p>
 
         <motion.div

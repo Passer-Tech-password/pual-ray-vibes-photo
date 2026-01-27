@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 const teamMembers = [
@@ -224,8 +225,92 @@ export default function AboutUs() {
             </a>
           </div>
         </motion.div>
-
+        <div><p>
+        </p></div>
       </div>
+
+      {/* ================= MODAL ================= */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsModalOpen(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-10 max-w-2xl w-full shadow-2xl relative overflow-y-auto max-h-[90vh]"
+            >
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-4 right-4 p-2 text-gray-500 hover:text-red-500 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+
+              <div className="flex flex-col items-center mb-6">
+                <div className="relative w-32 h-32 rounded-full overflow-hidden ring-4 ring-accent/30 mb-4">
+                  <Image
+                    src="/images/ceo.jpg"
+                    alt="Onwubuya Paul Chukwuebuka"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-brand dark:text-white text-center">
+                  Onwubuya Paul Chukwuebuka
+                </h2>
+                <p className="text-sm text-accent font-semibold tracking-wide">
+                  ArtsbyPaulray
+                </p>
+              </div>
+
+              <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed text-justify">
+                <p>
+                  My name is Onwubuya Paul Chukwuebuka, professionally known as{" "}
+                  <strong>ArtsbyPaulray</strong>. I am a Nigerian-based
+                  photographer and visual storyteller specializing in lifestyle,
+                  fashion, portraits, events, weddings, and video services.
+                </p>
+                <p>
+                  My journey began in 2018 as a passion and evolved into a
+                  professional practice in 2019. I am known for refined
+                  lifestyle storytelling, clean imagery, and advanced color
+                  grading—qualities that set my work apart and position me among
+                  the leading lifestyle photographers in the East.
+                </p>
+                <p>
+                  Based in Awka, Anambra State, I work with individuals, brands,
+                  and creatives to produce visually compelling, intentional, and
+                  high-quality images. I am also available for travel.
+                </p>
+              </div>
+
+              <div className="mt-8 text-center text-sm text-gray-500">
+                (Tap anywhere outside to close)
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

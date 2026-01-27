@@ -43,7 +43,7 @@ export default function Navbar() {
               href="/"
               className="text-lg md:text-xl font-semibold tracking-tight text-brand dark:text-white"
             >
-              Art.by_Paul-Ray-Vibes
+              Arts.by_Paul-Ray-Vibes
             </Link>
 
             <div className="hidden sm:ml-8 sm:flex space-x-6">
