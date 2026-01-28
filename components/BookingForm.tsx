@@ -21,7 +21,7 @@ export default function BookingForm({
     name: "",
     email: "",
     phone: "",
-    sessionType: selectedPackage || "lifestyle",
+    sessionType: selectedPackage || "photo-5",
     location: "",
     message: "",
     guests: "1-2",
@@ -107,7 +107,7 @@ export default function BookingForm({
               name: "",
               email: "",
               phone: "",
-              sessionType: "lifestyle",
+              sessionType: "photo-5",
               location: "",
               message: "",
               guests: "1-2",
@@ -128,12 +128,15 @@ export default function BookingForm({
   };
 
   const sessionTypes = [
-    { value: "lifestyle", label: "Lifestyle Photography" },
-    { value: "event", label: "Event Photography" },
-    { value: "family", label: "Family Portraits" },
-    { value: "outdoor", label: "Outdoor Session" },
-    { value: "portrait", label: "Professional Portrait" },
-    { value: "wedding", label: "Wedding Photography" },
+    { value: "photo-5", label: "Photoshoot: 5 Pictures (1 Outfit) - ₦75k" },
+    { value: "photo-7", label: "Photoshoot: 7 Pictures (2 Outfits) - ₦100k" },
+    { value: "photo-10", label: "Photoshoot: 10 Pictures (Max 2 Outfits) - ₦150k" },
+    { value: "photo-15", label: "Photoshoot: 15 Pictures (Max 3 Outfits) - ₦200k" },
+    { value: "photo-20", label: "Photoshoot: 20 Pictures (Max 4 Outfits) - ₦250k" },
+    { value: "video-hd", label: "Video: HD Lifestyle Video - ₦70k" },
+    { value: "video-4k", label: "Video: 4K Lifestyle Video - ₦150k" },
+    { value: "event-exclusive", label: "Event: Exclusive Coverage - ₦500k" },
+    { value: "custom", label: "Custom / Other" },
   ];
 
   const guestOptions = ["1-2", "3-5", "6-10", "10+"];
