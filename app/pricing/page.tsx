@@ -279,7 +279,7 @@ export default function PricingPage() {
                         Exclusive
                       </span>
                     </div>
-                    <div className="text-4xl font-bold text-brand mb-6">
+                    <div className="text-4xl font-bold text-accent mb-6">
                       {pkg.price}
                     </div>
                     <ul className="space-y-4 mb-8">
