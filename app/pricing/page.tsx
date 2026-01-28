@@ -187,7 +187,7 @@ export default function PricingPage() {
                       {pkg.description}
                     </div>
                     <div className="flex items-baseline justify-center">
-                      <span className="text-2xl font-bold text-brand">
+                      <span className="text-2xl font-bold text-gray-900 dark:text-white">
                         {pkg.price}
                       </span>
                     </div>
@@ -243,7 +243,7 @@ export default function PricingPage() {
                     <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">
                       {pkg.description}
                     </p>
-                    <div className="text-2xl font-bold text-brand">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
                       {pkg.price}
                     </div>
                   </div>
