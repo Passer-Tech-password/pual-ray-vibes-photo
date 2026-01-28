@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import PolicyModal from "@/components/PolicyModal";
 
 const teamMembers = [
   {
@@ -24,12 +25,20 @@ const teamMembers = [
 
 export default function AboutUs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showPolicy, setShowPolicy] = useState(false);
   
-  // Debug log to ensure state is initialized
-  console.log("AboutUs rendered, isModalOpen:", isModalOpen);
-
   const whatsappLink =
     "https://wa.me/2348168847345?text=Hello%20I%20would%20like%20to%20book%20a%20photoshoot";
+
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowPolicy(true);
+  };
+
+  const handlePolicyAccept = () => {
+    setShowPolicy(false);
+    window.open(whatsappLink, "_blank");
+  };
 
   return (
     <section className="w-full px-4 py-16 lg:py-24">
@@ -221,19 +230,23 @@ export default function AboutUs() {
           </p>
 
           <div className="mt-8 flex justify-center">
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={handleWhatsAppClick}
               className="px-10 py-4 rounded-xl bg-white text-brand font-semibold hover:bg-white/90 transition"
             >
               📱 Chat on WhatsApp
-            </a>
+            </button>
           </div>
         </motion.div>
         <div><p>
         </p></div>
       </div>
+
+      <PolicyModal
+        isOpen={showPolicy}
+        onClose={() => setShowPolicy(false)}
+        onAccept={handlePolicyAccept}
+      />
 
       {/* ================= MODAL ================= */}
       <AnimatePresence>

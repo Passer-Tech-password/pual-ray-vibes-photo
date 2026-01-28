@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Calendar from "@/components/Calendar";
 import BookingForm from "@/components/BookingForm";
+import PolicyModal from "@/components/PolicyModal";
 
 function BookingContent() {
   const searchParams = useSearchParams();
@@ -13,6 +14,7 @@ function BookingContent() {
   const [selectedPackage, setSelectedPackage] = useState<string>("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [showPolicy, setShowPolicy] = useState(false);
 
   useEffect(() => {
     const packageParam = searchParams.get("package");
@@ -59,8 +61,13 @@ function BookingContent() {
 
   const handleContinue = () => {
     if (selectedDate && selectedTime) {
-      setStep("form");
+      setShowPolicy(true);
     }
+  };
+
+  const handlePolicyAccept = () => {
+    setShowPolicy(false);
+    setStep("form");
   };
 
   const handleBack = () => {
@@ -186,6 +193,11 @@ function BookingContent() {
             />
           </motion.div>
         )}
+        <PolicyModal
+          isOpen={showPolicy}
+          onClose={() => setShowPolicy(false)}
+          onAccept={handlePolicyAccept}
+        />
       </motion.div>
     </section>
   );
