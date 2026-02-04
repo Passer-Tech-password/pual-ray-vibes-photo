@@ -1,34 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import PolicyModal from "@/components/PolicyModal";
+import { storage } from "@/lib/firebase";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
+import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
 
-const teamMembers = [
-  {
-    name: "John Doe",
-    role: "Lead Photographer",
-    image: "/images/team-1.jpg",
-  },
-  {
-    name: "Jane Smith",
-    role: "Creative Director",
-    image: "/images/team-2.jpg",
-  },
-  {
-    name: "Michael Lee",
-    role: "Photo Editor",
-    image: "/images/team-3.jpg",
-  },
-];
+const db = getFirestore();
 
 export default function AboutUs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showPolicy, setShowPolicy] = useState(false);
+  const [ceoImage, setCeoImage] = useState("/images/ceo.jpg");
   
   const whatsappLink =
     "https://wa.me/2348168847345?text=Hello%20I%20would%20like%20to%20book%20a%20photoshoot";
+
+  useEffect(() => {
+    async function fetchCeoImage() {
+      // 1. Try Firestore first (Fallback)
+      try {
+        const q = query(
+          collection(db, "images"),
+          where("section", "==", "ceo"),
+          orderBy("createdAt", "desc"),
+          limit(1)
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          setCeoImage(doc.data().url);
+          return; // Found it, no need to check storage
+        }
+      } catch (err) {
+        console.warn("Firestore CEO fetch failed:", err);
+      }
+
+      // 2. Try Storage (Original)
+      try {
+        const ceoRef = ref(storage, "ceo");
+        const res = await listAll(ceoRef);
+        if (res.items.length > 0) {
+          // Sort to get the latest one (assuming timestamp in name or upload order)
+          // Note: listAll doesn't guarantee order, but names with timestamps usually work
+          const sortedItems = res.items.sort((a, b) => b.name.localeCompare(a.name));
+          const url = await getDownloadURL(sortedItems[0]);
+          setCeoImage(url);
+        }
+      } catch (error) {
+        console.warn("Error fetching CEO image from storage:", error);
+      }
+    }
+    fetchCeoImage();
+  }, []);
 
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -119,7 +145,7 @@ export default function AboutUs() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
             <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto rounded-full overflow-hidden ring-4 ring-accent/30">
               <Image
-                src="/images/ceo.jpg"
+                src={ceoImage}
                 alt="CEO"
                 fill
                 className="object-cover"
@@ -152,36 +178,8 @@ export default function AboutUs() {
               Meet Our Creative Team
             </h2>
             <p className="mt-3 text-gray-600 dark:text-gray-400">
-              The professionals behind every beautiful shot.
+              Coming Soon
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.map((member, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -5 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden ring-1 ring-accent/15 shadow-sm"
-              >
-                <div className="relative w-full h-64">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                <div className="p-5 text-center">
-                  <h3 className="text-lg font-semibold text-brand dark:text-white">
-                    {member.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {member.role}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
           </div>
         </motion.div>
 
@@ -194,7 +192,7 @@ export default function AboutUs() {
           className="grid grid-cols-2 md:grid-cols-4 gap-6"
         >
           {[
-            { label: "Happy Clients", value: "500+" },
+            { label: "Happy Clients", value: "1000+" },
             { label: "Events Covered", value: "300+" },
             { label: "Years Experience", value: "8+" },
             { label: "Photos Delivered", value: "50k+" },
@@ -288,7 +286,7 @@ export default function AboutUs() {
               <div className="flex flex-col items-center mb-6">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden ring-4 ring-accent/30 mb-4">
                   <Image
-                    src="/images/ceo.jpg"
+                    src={ceoImage}
                     alt="Onwubuya Paul Chukwuebuka"
                     fill
                     className="object-cover"

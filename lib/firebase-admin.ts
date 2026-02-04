@@ -12,8 +12,6 @@ const getFirebaseAdminApp = () => {
   
   if (!privateKey) {
     console.warn("⚠️ FIREBASE_PRIVATE_KEY is missing. Firebase Admin not initialized.");
-    // Return null to allow build to proceed (imports won't fail), 
-    // but runtime usage will fail if keys are still missing.
     return null;
   }
 
@@ -29,6 +27,32 @@ const getFirebaseAdminApp = () => {
 
 const adminApp = getFirebaseAdminApp();
 
-export const adminAuth = adminApp ? getAuth(adminApp) : {} as ReturnType<typeof getAuth>;
-export const adminDB = adminApp ? getFirestore(adminApp) : {} as ReturnType<typeof getFirestore>;
-export const adminStorage = adminApp ? getStorage(adminApp).bucket() : {} as ReturnType<typeof getStorage>['bucket'] extends (...args: any) => infer R ? R : never;
+const mockAuth = {
+  verifyIdToken: async () => { throw new Error("Firebase Admin not initialized (Auth)"); },
+  getUser: async () => { throw new Error("Firebase Admin not initialized (Auth)"); },
+} as unknown as ReturnType<typeof getAuth>;
+
+const mockFirestore = {
+  collection: () => ({ 
+    doc: () => ({ 
+      get: async () => { throw new Error("Firebase Admin not initialized (Firestore)"); },
+      set: async () => { throw new Error("Firebase Admin not initialized (Firestore)"); },
+      update: async () => { throw new Error("Firebase Admin not initialized (Firestore)"); }
+    })
+  }),
+} as unknown as ReturnType<typeof getFirestore>;
+
+const mockStorageBucket = {
+  getFiles: async () => { throw new Error("Firebase Admin not initialized (Storage)"); },
+  file: () => ({
+    save: async () => { throw new Error("Firebase Admin not initialized (Storage)"); },
+    getSignedUrl: async () => { throw new Error("Firebase Admin not initialized (Storage)"); },
+    delete: async () => { throw new Error("Firebase Admin not initialized (Storage)"); },
+  }),
+} as unknown as ReturnType<typeof getStorage>['bucket'] extends (...args: any) => infer R ? R : never;
+
+export const adminAuth = adminApp ? getAuth(adminApp) : mockAuth;
+export const adminDB = adminApp ? getFirestore(adminApp) : mockFirestore;
+const storageService = adminApp ? getStorage(adminApp) : null;
+export const adminStorage = storageService ? storageService.bucket() : mockStorageBucket;
+export const adminStorageService = storageService;

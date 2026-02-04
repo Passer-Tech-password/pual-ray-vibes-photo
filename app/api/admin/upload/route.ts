@@ -43,7 +43,12 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(arrayBuffer);
 
     // ✅ Generate filename
-    const filename = `${section}/${Date.now()}-${file.name}`;
+    let filename = "";
+    if (section === "ceo") {
+      filename = `ceo/${Date.now()}-${file.name}`;
+    } else {
+      filename = `gallery/${section}/${Date.now()}-${file.name}`;
+    }
 
     // ✅ Upload to Firebase Storage
     const bucket = adminStorage;

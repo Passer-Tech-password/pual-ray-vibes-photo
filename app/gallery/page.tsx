@@ -2,7 +2,10 @@
 import { useEffect, useState } from "react";
 import { storage } from "@/lib/firebase";
 import { ref, listAll, getDownloadURL } from "firebase/storage";
+import { getFirestore, collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import GalleryGrid from "../../components/GalleryGrid";
+
+const db = getFirestore();
 
 export default function GalleryPage() {
   const [images, setImages] = useState<{ url: string; path?: string }[]>([]);
@@ -13,6 +16,28 @@ export default function GalleryPage() {
   }, [category]);
 
   async function fetchImages() {
+    const fetchedImages: { url: string; path?: string }[] = [];
+
+    // 1. Fetch from Firestore (Fallback)
+    try {
+      // Query images by section
+      const q = query(
+        collection(db, "images"),
+        where("section", "==", category),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        fetchedImages.push({
+          url: doc.data().url,
+          path: doc.id
+        });
+      });
+    } catch (err) {
+      console.warn("Firestore fetch failed:", err);
+    }
+
+    // 2. Fetch from Storage (Original)
     try {
       const listRef = ref(storage, `gallery/${category}/`);
       const res = await listAll(listRef);
@@ -22,10 +47,12 @@ export default function GalleryPage() {
           path: item.fullPath,
         }))
       );
-      setImages(urls);
+      fetchedImages.push(...urls);
     } catch (err) {
-      console.error(err);
+      console.warn("Storage fetch failed:", err);
     }
+
+    setImages(fetchedImages);
   }
 
   return (
