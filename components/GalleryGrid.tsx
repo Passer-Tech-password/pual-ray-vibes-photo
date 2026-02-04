@@ -28,14 +28,13 @@ export default function GalleryGrid({ images, onDelete }: GalleryGridProps) {
   return (
     <>
       <motion.div 
-        layout
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
       >
         <AnimatePresence mode="popLayout">
           {images.map((img, i) => (
             <motion.div
               layout
-              key={img.path ?? img.url} // Use url as fallback key if path is missing
+              key={img.path || img.url || i}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
