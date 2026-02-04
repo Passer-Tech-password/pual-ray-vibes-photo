@@ -1,5 +1,0 @@
-[33mcommit 06b5e91928fb6568918bb05028a35d95055e2c3b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
-Author: 50000000000000000000000 <chukwunebumsimeon@gmail.com>
-Date:   Wed Feb 4 14:20:32 2026 +0100
-
-    feat: implement Firestore fallback for images and fix storage issues
