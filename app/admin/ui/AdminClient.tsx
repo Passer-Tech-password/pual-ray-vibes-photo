@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import imageCompression from "browser-image-compression";
 import { motion } from "framer-motion";
 import { storage } from "@/lib/firebase";
@@ -34,8 +34,11 @@ const SECTIONS = ["lifestyle", "event", "lovelife", "family", "outdoor", "ceo"];
 export default function AdminClient() {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [file, setFile] = useState<File | null>(null);
   const [section, setSection] = useState("lifestyle");
   const [loadingImages, setLoadingImages] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function fetchImages() {
     setLoadingImages(true);
@@ -216,6 +219,7 @@ export default function AdminClient() {
           "Upload Image"
         )}
         <input
+          ref={fileInputRef}
           type="file"
           className="hidden"
           accept="image/*"
