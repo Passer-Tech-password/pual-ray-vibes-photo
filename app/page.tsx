@@ -31,23 +31,32 @@ export default function HomePage() {
           transition={{ delay: 0.6 }}
           className="mt-8 flex gap-4 flex-wrap justify-center"
         >
-          <Link
-            href="/booking"
-            className="btn btn-primary"
-          >
-            Book a Session
+          <Link href="/booking">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="btn btn-primary"
+            >
+              Book a Session
+            </motion.button>
           </Link>
-          <Link
-            href="/gallery"
-            className="btn btn-outline"
-          >
-            Explore Gallery
+          <Link href="/gallery">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="btn btn-outline"
+            >
+              Explore Gallery
+            </motion.button>
           </Link>
-          <Link
-            href="/about-Us"
-            className="btn btn-ghost"
-          >
-            About Us
+          <Link href="/about-Us">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="btn btn-ghost"
+            >
+              About Us
+            </motion.button>
           </Link>
         </motion.div>
 
