@@ -43,3 +43,22 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: err.message || "Internal Error" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const publicId = searchParams.get("public_id");
+
+    if (!publicId) {
+      return NextResponse.json({ error: "Missing public_id" }, { status: 400 });
+    }
+
+    // Delete from Cloudinary
+    const result = await cloudinary.uploader.destroy(publicId);
+
+    return NextResponse.json({ success: true, result });
+  } catch (err: any) {
+    console.error("Delete error:", err);
+    return NextResponse.json({ error: err.message || "Internal Error" }, { status: 500 });
+  }
+}

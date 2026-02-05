@@ -21,7 +21,29 @@ export default function AdminClient() {
   const [section, setSection] = useState("lifestyle");
   const [loadingImages, setLoadingImages] = useState(false);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleDelete(id: string) {
+    if (!confirm("Are you sure you want to delete this image?")) return;
+    
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/gallery?public_id=${id}`, {
+        method: "DELETE",
+      });
+      
+      if (!res.ok) throw new Error("Failed to delete");
+      
+      // Remove from UI
+      setImages(prev => prev.filter(img => img.id !== id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete image");
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   async function fetchImages() {
     setLoadingImages(true);
@@ -271,6 +293,27 @@ export default function AdminClient() {
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                  </svg>
                </div>
+            )}
+            
+            {/* Delete Button */}
+            {img.status !== "uploading" && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(img.id);
+                }}
+                disabled={deletingId === img.id}
+                className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 disabled:opacity-50 z-10 shadow-sm"
+                title="Delete Image"
+              >
+                 {deletingId === img.id ? (
+                   <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                 ) : (
+                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                   </svg>
+                 )}
+              </button>
             )}
 
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate opacity-0 group-hover:opacity-100 transition-opacity">
