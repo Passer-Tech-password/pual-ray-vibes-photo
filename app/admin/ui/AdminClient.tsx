@@ -116,10 +116,10 @@ export default function AdminClient() {
 
     try {
       console.log("Compressing image...");
-      // Max 500KB to ensure it fits in Firestore (limit 1MB)
+      // Max 0.4MB to ensure it fits in Firestore (limit 1MB)
       const compressed = await imageCompression(file, {
-        maxSizeMB: 0.5,
-        maxWidthOrHeight: 1200,
+        maxSizeMB: 0.4,
+        maxWidthOrHeight: 1000,
       });
       console.log("Compression done.");
 
@@ -150,26 +150,37 @@ export default function AdminClient() {
 
       // 2. Upload to Firestore (Fallback)
       // Convert image to Base64 (Temporary solution since Storage is down)
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64String = reader.result as string;
-        
-        // Store in Firestore "images" collection
-        await addDoc(collection(db, "images"), {
-          url: base64String, // Storing base64 directly
-          section: section,
-          createdAt: new Date().toISOString(),
-          name: file.name
-        });
+      await new Promise<void>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          try {
+            const base64String = reader.result as string;
+            
+            // Check size before uploading (Firestore limit is 1MB, roughly 700KB Base64)
+            if (base64String.length > 1000000) {
+               throw new Error("Image is too large for database storage. Please try a smaller image.");
+            }
 
-        alert("Upload successful (saved to Firestore)!");
-        setUploading(false);
-        setUploadProgress(0);
-        setFile(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-        fetchImages(); // Refresh gallery
-      };
-      reader.readAsDataURL(compressed);
+            // Store in Firestore "images" collection
+            await addDoc(collection(db, "images"), {
+              url: base64String, // Storing base64 directly
+              section: section,
+              createdAt: new Date().toISOString(),
+              name: file.name
+            });
+
+            alert("Upload successful (saved to Firestore)!");
+            setFile(null);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+            fetchImages(); // Refresh gallery
+            resolve();
+          } catch (err) {
+            reject(err);
+          }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(compressed);
+      });
 
     } catch (err) {
       console.error("Upload Error Catch:", err);
@@ -178,7 +189,7 @@ export default function AdminClient() {
     } finally {
       console.log("Resetting uploading state.");
       setUploading(false);
-      e.target.value = "";
+      setUploadProgress(0);
     }
   }
 
