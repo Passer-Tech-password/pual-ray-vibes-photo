@@ -24,6 +24,7 @@ export default function AdminClient() {
   const [uploadStatus, setUploadStatus] = useState("");
   const [section, setSection] = useState("lifestyle");
   const [loadingImages, setLoadingImages] = useState(false);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function fetchImages() {
@@ -97,6 +98,7 @@ export default function AdminClient() {
     if (!files || files.length === 0) return;
 
     setUploading(true);
+    setErrorDetails(null);
     const filesArray = Array.from(files);
     const totalFiles = filesArray.length;
     let completedCount = 0;
@@ -172,8 +174,9 @@ export default function AdminClient() {
               reader.readAsDataURL(compressed);
             });
 
-          } catch (err) {
+          } catch (err: any) {
             console.error(`Failed to upload ${file.name}:`, err);
+            setErrorDetails(`Error uploading ${file.name}: ${err.message || err.code || "Unknown error"}`);
             errorCount++;
           } finally {
             completedCount++;
@@ -195,9 +198,10 @@ export default function AdminClient() {
       if (fileInputRef.current) fileInputRef.current.value = "";
       fetchImages(); // Refresh list
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("Batch upload critical error:", err);
-      alert("An unexpected error occurred during upload.");
+      setErrorDetails(`Critical Error: ${err.message || "Unknown error occurred"}`);
+      alert(`An unexpected error occurred: ${err.message}`);
     } finally {
       setUploading(false);
       setUploadStatus("");
@@ -214,6 +218,13 @@ export default function AdminClient() {
       >
         Admin Dashboard
       </motion.h1>
+
+      {errorDetails && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+          <strong className="font-bold">Upload Failed! </strong>
+          <span className="block sm:inline">{errorDetails}</span>
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-4 mb-8 items-start md:items-center">
         <div className="flex-1 w-full">
