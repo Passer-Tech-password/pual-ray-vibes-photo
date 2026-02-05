@@ -97,80 +97,92 @@ export default function AdminClient() {
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    const totalFiles = files.length;
+    const filesArray = Array.from(files);
+    const totalFiles = filesArray.length;
     let completedCount = 0;
     let errorCount = 0;
 
-    console.log(`Starting batch upload of ${totalFiles} files...`);
+    // Process in batches to avoid freezing the browser or hitting rate limits
+    const BATCH_SIZE = 3; 
+    const chunks = [];
+    for (let i = 0; i < totalFiles; i += BATCH_SIZE) {
+      chunks.push(filesArray.slice(i, i + BATCH_SIZE));
+    }
+
+    console.log(`Starting upload of ${totalFiles} files in ${chunks.length} batches...`);
 
     try {
-      // Process files in parallel
-      const uploadPromises = Array.from(files).map(async (file, index) => {
-        try {
-          setUploadStatus(`Processing ${index + 1}/${totalFiles}...`);
-          
-          console.log(`[File ${index + 1}] Compressing...`);
-          // Compress: Max 0.4MB to ensure it fits in Firestore
-          const compressed = await imageCompression(file, {
-            maxSizeMB: 0.4,
-            maxWidthOrHeight: 1000,
-            useWebWorker: true, // Speed up compression
-          });
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        const batchNumber = i + 1;
+        setUploadStatus(`Processing batch ${batchNumber}/${chunks.length}...`);
 
-          // 1. Try Upload to Firebase Storage
+        await Promise.all(chunk.map(async (file) => {
           try {
-            const filename = `${Date.now()}-${file.name}`;
-            const path = section === "ceo" 
-              ? `ceo/${filename}`
-              : `gallery/${section}/${filename}`;
+            console.log(`[Batch ${batchNumber}] Compressing ${file.name}...`);
+            // Optimize compression: Smaller max size and dimensions for speed
+            const compressed = await imageCompression(file, {
+              maxSizeMB: 0.3, // Reduced from 0.4
+              maxWidthOrHeight: 800, // Reduced from 1000
+              useWebWorker: true,
+              initialQuality: 0.7, // Speed up compression
+            });
 
-            const storageRef = ref(storage, path);
-            await uploadBytes(storageRef, compressed);
-            console.log(`[File ${index + 1}] Uploaded to Storage.`);
-            return; // Success
-          } catch (storageErr) {
-            console.warn(`[File ${index + 1}] Storage failed, trying Firestore fallback...`);
-          }
+            // 1. Try Upload to Firebase Storage
+            try {
+              const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+              const path = section === "ceo" 
+                ? `ceo/${filename}`
+                : `gallery/${section}/${filename}`;
 
-          // 2. Upload to Firestore (Fallback)
-          await new Promise<void>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-              try {
-                const base64String = reader.result as string;
-                
-                if (base64String.length > 1000000) {
-                   throw new Error("Image too large (>1MB).");
+              const storageRef = ref(storage, path);
+              await uploadBytes(storageRef, compressed);
+              console.log(`[Batch ${batchNumber}] Uploaded ${file.name} to Storage.`);
+              return; // Success
+            } catch (storageErr) {
+              console.warn(`[Batch ${batchNumber}] Storage failed for ${file.name}, trying Firestore fallback...`);
+            }
+
+            // 2. Upload to Firestore (Fallback)
+            await new Promise<void>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = async () => {
+                try {
+                  const base64String = reader.result as string;
+                  
+                  // Strict size check for Firestore (1MB limit)
+                  if (base64String.length > 950000) { // slightly less than 1MB safety margin
+                     throw new Error("Image too large for fallback storage.");
+                  }
+
+                  await addDoc(collection(db, "images"), {
+                    url: base64String,
+                    section: section,
+                    createdAt: new Date().toISOString(),
+                    name: file.name
+                  });
+                  
+                  console.log(`[Batch ${batchNumber}] Saved ${file.name} to Firestore.`);
+                  resolve();
+                } catch (err) {
+                  reject(err);
                 }
+              };
+              reader.onerror = (error) => reject(error);
+              reader.readAsDataURL(compressed);
+            });
 
-                await addDoc(collection(db, "images"), {
-                  url: base64String,
-                  section: section,
-                  createdAt: new Date().toISOString(),
-                  name: file.name
-                });
-                
-                console.log(`[File ${index + 1}] Saved to Firestore.`);
-                resolve();
-              } catch (err) {
-                reject(err);
-              }
-            };
-            reader.onerror = (error) => reject(error);
-            reader.readAsDataURL(compressed);
-          });
-
-        } catch (err) {
-          console.error(`[File ${index + 1}] Failed:`, err);
-          errorCount++;
-          // We don't throw here so other files can continue
-        } finally {
-          completedCount++;
-          setUploadStatus(`Uploaded ${completedCount}/${totalFiles}`);
-        }
-      });
-
-      await Promise.all(uploadPromises);
+          } catch (err) {
+            console.error(`Failed to upload ${file.name}:`, err);
+            errorCount++;
+          } finally {
+            completedCount++;
+          }
+        }));
+        
+        // Update progress after batch
+        setUploadStatus(`Uploaded ${completedCount}/${totalFiles} images...`);
+      }
 
       if (errorCount === 0) {
         alert("All images uploaded successfully!");
