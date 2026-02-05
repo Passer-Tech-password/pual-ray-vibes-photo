@@ -14,6 +14,8 @@ type GalleryImage = {
   url: string;
   section?: string;
   isBase64?: boolean;
+  status?: "pending" | "uploading" | "success" | "error";
+  localId?: string;
 };
 
 const SECTIONS = ["lifestyle", "event", "lovelife", "family", "outdoor", "portrait", "ceo"];
@@ -100,18 +102,33 @@ export default function AdminClient() {
     setUploading(true);
     setErrorDetails(null);
     const filesArray = Array.from(files);
+    
+    // 1. Optimistic UI: Add images immediately
+    const newImages = filesArray.map(file => ({
+      url: URL.createObjectURL(file),
+      section: section,
+      status: "uploading" as const,
+      localId: `${Date.now()}-${Math.random()}`
+    }));
+    
+    // Prepend new images to the grid
+    setImages(prev => [...newImages, ...prev]);
+
     const totalFiles = filesArray.length;
     let completedCount = 0;
     let errorCount = 0;
 
-    // Process in batches to avoid freezing the browser or hitting rate limits
+    // Process in batches
     const BATCH_SIZE = 3; 
     const chunks = [];
     for (let i = 0; i < totalFiles; i += BATCH_SIZE) {
-      chunks.push(filesArray.slice(i, i + BATCH_SIZE));
+      chunks.push({
+        files: filesArray.slice(i, i + BATCH_SIZE),
+        imagesMeta: newImages.slice(i, i + BATCH_SIZE)
+      });
     }
 
-    console.log(`Starting upload of ${totalFiles} files in ${chunks.length} batches...`);
+    console.log(`Starting upload of ${totalFiles} files...`);
 
     try {
       for (let i = 0; i < chunks.length; i++) {
@@ -119,15 +136,19 @@ export default function AdminClient() {
         const batchNumber = i + 1;
         setUploadStatus(`Processing batch ${batchNumber}/${chunks.length}...`);
 
-        await Promise.all(chunk.map(async (file) => {
+        await Promise.all(chunk.files.map(async (file, idx) => {
+          const imageMeta = chunk.imagesMeta[idx];
+          
           try {
             console.log(`[Batch ${batchNumber}] Compressing ${file.name}...`);
-            // Optimize compression: Smaller max size and dimensions for speed
+            
+            // Fast Compression: Resize only, no iterative compression
             const compressed = await imageCompression(file, {
-              maxSizeMB: 0.3, // Reduced from 0.4
-              maxWidthOrHeight: 800, // Reduced from 1000
+              maxWidthOrHeight: 1024, // Reasonable size for web
               useWebWorker: true,
-              initialQuality: 0.7, // Speed up compression
+              fileType: "image/jpeg",
+              initialQuality: 0.7, 
+              // Removed maxSizeMB to avoid slow iterative loops
             });
 
             // 1. Try Upload to Firebase Storage
@@ -140,6 +161,11 @@ export default function AdminClient() {
               const storageRef = ref(storage, path);
               await uploadBytes(storageRef, compressed);
               console.log(`[Batch ${batchNumber}] Uploaded ${file.name} to Storage.`);
+              
+              // Update status to success
+              setImages(prev => prev.map(img => 
+                img.localId === imageMeta.localId ? { ...img, status: "success" } : img
+              ));
               return; // Success
             } catch (storageErr) {
               console.warn(`[Batch ${batchNumber}] Storage failed for ${file.name}, trying Firestore fallback...`);
@@ -152,8 +178,7 @@ export default function AdminClient() {
                 try {
                   const base64String = reader.result as string;
                   
-                  // Strict size check for Firestore (1MB limit)
-                  if (base64String.length > 950000) { // slightly less than 1MB safety margin
+                  if (base64String.length > 950000) { 
                      throw new Error("Image too large for fallback storage.");
                   }
 
@@ -165,6 +190,11 @@ export default function AdminClient() {
                   });
                   
                   console.log(`[Batch ${batchNumber}] Saved ${file.name} to Firestore.`);
+                  
+                   // Update status to success
+                  setImages(prev => prev.map(img => 
+                    img.localId === imageMeta.localId ? { ...img, status: "success" } : img
+                  ));
                   resolve();
                 } catch (err) {
                   reject(err);
@@ -178,25 +208,29 @@ export default function AdminClient() {
             console.error(`Failed to upload ${file.name}:`, err);
             setErrorDetails(`Error uploading ${file.name}: ${err.message || err.code || "Unknown error"}`);
             errorCount++;
+            
+            // Update status to error
+            setImages(prev => prev.map(img => 
+              img.localId === imageMeta.localId ? { ...img, status: "error" } : img
+            ));
           } finally {
             completedCount++;
           }
         }));
         
-        // Update progress after batch
         setUploadStatus(`Uploaded ${completedCount}/${totalFiles} images...`);
       }
 
-      if (errorCount === 0) {
-        alert("All images uploaded successfully!");
-      } else if (errorCount < totalFiles) {
-        alert(`Uploaded ${totalFiles - errorCount} images. ${errorCount} failed.`);
+      if (errorCount > 0) {
+        alert(`${errorCount} images failed to upload. Check the red error box.`);
       } else {
-        alert("All uploads failed. Please check your connection or image sizes.");
+        // Clear success status after a while or just leave it
+        setTimeout(() => {
+           fetchImages(); // Refresh from server to get permanent URLs
+        }, 2000);
       }
 
       if (fileInputRef.current) fileInputRef.current.value = "";
-      fetchImages(); // Refresh list
 
     } catch (err: any) {
       console.error("Batch upload critical error:", err);
@@ -295,7 +329,7 @@ export default function AdminClient() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
         {images.map((img, i) => (
           <motion.div
-            key={img.id ?? i}
+            key={img.id ?? img.localId ?? i}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="relative group aspect-square overflow-hidden rounded-lg shadow-md bg-gray-100"
@@ -303,9 +337,31 @@ export default function AdminClient() {
             <img
               src={img.url}
               alt={img.section || "Gallery image"}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${img.status === "uploading" ? "opacity-50 grayscale" : ""}`}
               loading="lazy"
             />
+            
+            {/* Overlay for uploading/error/success */}
+            {img.status === "uploading" && (
+               <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+               </div>
+            )}
+
+            {img.status === "error" && (
+               <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-50">
+                 <span className="text-white font-bold text-xl">!</span>
+               </div>
+            )}
+
+             {img.status === "success" && (
+               <div className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-40">
+                 <svg className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                 </svg>
+               </div>
+            )}
+
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate opacity-0 group-hover:opacity-100 transition-opacity">
                {img.section}
             </div>
