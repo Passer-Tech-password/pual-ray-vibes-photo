@@ -3,17 +3,11 @@
 import { useEffect, useState, useRef } from "react";
 import imageCompression from "browser-image-compression";
 import { motion } from "framer-motion";
-import { storage } from "@/lib/firebase";
-import { ref, listAll, getDownloadURL, uploadBytes } from "firebase/storage";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
-
-const db = getFirestore();
 
 type GalleryImage = {
-  id?: string;
+  id: string;
   url: string;
   section?: string;
-  isBase64?: boolean;
   status?: "pending" | "uploading" | "success" | "error";
   localId?: string;
 };
@@ -32,58 +26,13 @@ export default function AdminClient() {
   async function fetchImages() {
     setLoadingImages(true);
     try {
-      const allImages: GalleryImage[] = [];
+      // Fetch all images from Cloudinary (gallery folder)
+      const res = await fetch("/api/gallery?section=all");
+      const data = await res.json();
       
-      // 1. Try to fetch from Firestore (Base64 fallback)
-      try {
-        const q = query(collection(db, "images"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          allImages.push({
-            id: doc.id,
-            url: data.url,
-            section: data.section,
-            isBase64: true
-          });
-        });
-      } catch (err) {
-        console.warn("Firestore fetch failed:", err);
+      if (data.images) {
+        setImages(data.images);
       }
-
-      // 2. Try to fetch from Storage (if available)
-      try {
-        await Promise.all(SECTIONS.map(async (sec) => {
-          const folderPath = sec === "ceo" ? "ceo" : `gallery/${sec}`;
-          const folderRef = ref(storage, folderPath);
-          
-          try {
-            const res = await listAll(folderRef);
-            const urls = await Promise.all(
-              res.items.map(async (item) => {
-                const url = await getDownloadURL(item);
-                return {
-                  id: item.fullPath,
-                  url,
-                  section: sec,
-                  isBase64: false
-                };
-              })
-            );
-            allImages.push(...urls);
-          } catch (err) {
-            // Ignore storage errors for now since we know it's down
-          }
-        }));
-      } catch (err) {
-        // Ignore
-      }
-
-      // Sort: Firestore images first (assuming newer), or mix them
-      // Since we can't easily sort mixed sources by date without metadata, 
-      // we'll just put Firestore ones (likely newer/fallback) at the top if no duplicates.
-      
-      setImages(allImages);
     } catch (err) {
       console.error("Failed to fetch images:", err);
     } finally {
@@ -105,6 +54,7 @@ export default function AdminClient() {
     
     // 1. Optimistic UI: Add images immediately
     const newImages = filesArray.map(file => ({
+      id: `temp-${Date.now()}-${Math.random()}`,
       url: URL.createObjectURL(file),
       section: section,
       status: "uploading" as const,
@@ -142,71 +92,38 @@ export default function AdminClient() {
           try {
             console.log(`[Batch ${batchNumber}] Compressing ${file.name}...`);
             
-            // Fast Compression: Resize only, no iterative compression
+            // Fast Compression
             const compressed = await imageCompression(file, {
-              maxWidthOrHeight: 1024, // Reasonable size for web
+              maxWidthOrHeight: 1200, 
               useWebWorker: true,
               fileType: "image/jpeg",
-              initialQuality: 0.7, 
-              // Removed maxSizeMB to avoid slow iterative loops
+              initialQuality: 0.8,
             });
 
-            // 1. Try Upload to Firebase Storage
-            try {
-              const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-              const path = section === "ceo" 
-                ? `ceo/${filename}`
-                : `gallery/${section}/${filename}`;
+            const formData = new FormData();
+            formData.append("file", compressed);
+            formData.append("section", section);
 
-              const storageRef = ref(storage, path);
-              await uploadBytes(storageRef, compressed);
-              console.log(`[Batch ${batchNumber}] Uploaded ${file.name} to Storage.`);
-              
-              // Update status to success
-              setImages(prev => prev.map(img => 
-                img.localId === imageMeta.localId ? { ...img, status: "success" } : img
-              ));
-              return; // Success
-            } catch (storageErr) {
-              console.warn(`[Batch ${batchNumber}] Storage failed for ${file.name}, trying Firestore fallback...`);
+            const res = await fetch("/api/upload", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.error || "Upload failed");
             }
 
-            // 2. Upload to Firestore (Fallback)
-            await new Promise<void>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onloadend = async () => {
-                try {
-                  const base64String = reader.result as string;
-                  
-                  if (base64String.length > 950000) { 
-                     throw new Error("Image too large for fallback storage.");
-                  }
-
-                  await addDoc(collection(db, "images"), {
-                    url: base64String,
-                    section: section,
-                    createdAt: new Date().toISOString(),
-                    name: file.name
-                  });
-                  
-                  console.log(`[Batch ${batchNumber}] Saved ${file.name} to Firestore.`);
-                  
-                   // Update status to success
-                  setImages(prev => prev.map(img => 
-                    img.localId === imageMeta.localId ? { ...img, status: "success" } : img
-                  ));
-                  resolve();
-                } catch (err) {
-                  reject(err);
-                }
-              };
-              reader.onerror = (error) => reject(error);
-              reader.readAsDataURL(compressed);
-            });
-
+            console.log(`[Batch ${batchNumber}] Uploaded ${file.name}.`);
+            
+            // Update status to success
+            setImages(prev => prev.map(img => 
+              img.localId === imageMeta.localId ? { ...img, status: "success" } : img
+            ));
+            
           } catch (err: any) {
             console.error(`Failed to upload ${file.name}:`, err);
-            setErrorDetails(`Error uploading ${file.name}: ${err.message || err.code || "Unknown error"}`);
+            setErrorDetails(`Error uploading ${file.name}: ${err.message || "Unknown error"}`);
             errorCount++;
             
             // Update status to error
@@ -224,9 +141,8 @@ export default function AdminClient() {
       if (errorCount > 0) {
         alert(`${errorCount} images failed to upload. Check the red error box.`);
       } else {
-        // Clear success status after a while or just leave it
         setTimeout(() => {
-           fetchImages(); // Refresh from server to get permanent URLs
+           fetchImages(); // Refresh from server
         }, 2000);
       }
 
@@ -235,7 +151,6 @@ export default function AdminClient() {
     } catch (err: any) {
       console.error("Batch upload critical error:", err);
       setErrorDetails(`Critical Error: ${err.message || "Unknown error occurred"}`);
-      alert(`An unexpected error occurred: ${err.message}`);
     } finally {
       setUploading(false);
       setUploadStatus("");
@@ -268,13 +183,9 @@ export default function AdminClient() {
             value={section}
             onChange={(e) => setSection(e.target.value)}
           >
-            <option value="lifestyle">Lifestyle</option>
-            <option value="event">Event</option>
-            <option value="lovelife">Love Life</option>
-            <option value="family">Family</option>
-            <option value="outdoor">Outdoor</option>
-            <option value="portrait">Portrait</option>
-            <option value="ceo">CEO Profile</option>
+            {SECTIONS.map(s => (
+               <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+            ))}
           </select>
         </div>
 
@@ -302,7 +213,7 @@ export default function AdminClient() {
               type="file"
               className="hidden"
               accept="image/*"
-              multiple // ENABLED MULTIPLE UPLOADS
+              multiple 
               onChange={handleUpload}
               disabled={uploading}
             />
@@ -363,7 +274,7 @@ export default function AdminClient() {
             )}
 
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate opacity-0 group-hover:opacity-100 transition-opacity">
-               {img.section}
+               {img.section || "uploaded"}
             </div>
           </motion.div>
         ))}

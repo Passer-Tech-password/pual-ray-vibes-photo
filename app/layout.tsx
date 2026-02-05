@@ -4,28 +4,35 @@ import Nav from "@/components/Navbar";
 import ToastProvider from "@/components/ToastProvider";
 
 export const metadata = {
-  title:
-    "Arts.by-Paul-Ray-vibes-Photography | Professional Creative Photographer",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://artbypaulrayvibes.com"),
+  title: {
+    default: "Arts.by Paul-Ray-vibes | Professional Creative Photographer",
+    template: "%s | Arts.by Paul-Ray-vibes",
+  },
   description:
     "A high-quality photography website showcasing lifestyle, events, family, outdoor, and portrait photography. Explore our gallery and services.",
   keywords: [
     "photography",
-    "lifestyle",
+    "lifestyle photography",
     "event photography",
     "family portraits",
-    "Nigerian photography",
+    "Nigerian photographer",
+    "Paul Ray Vibes",
+    "creative photography",
+    "fashion photography",
   ],
   openGraph: {
-    title: "Arts.by-Paul-Ray-vibes-Photography",
+    title: "Arts.by Paul-Ray-vibes | Professional Creative Photographer",
     description:
-      "Professional lifestyle, event, and outdoor photography. Visit our gallery.",
-    url: "https://yourwebsite.com",
-    siteName: "Arts.by-Paul-Ray-vibes-Photography",
+      "Timeless imagery defined by color, depth, and story. Explore our portfolio of lifestyle, event, and portrait photography.",
+    url: "https://artbypaulrayvibes.com",
+    siteName: "Arts.by Paul-Ray-vibes",
     images: [
       {
-        url: "/preview.jpg",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
+        alt: "Arts.by Paul-Ray-vibes Photography Portfolio",
       },
     ],
     locale: "en_US",
@@ -33,9 +40,21 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Arts.by-Paul-Ray-vibes-Photography",
-    description: "Professional photography portfolio website",
-    images: ["/preview.jpg"],
+    title: "Arts.by Paul-Ray-vibes | Professional Creative Photographer",
+    description: "Professional photography portfolio website showcasing lifestyle, events, and portraits.",
+    images: ["/og-image.jpg"],
+    creator: "@paulrayvibes",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -44,12 +63,30 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Arts.by Paul-Ray-vibes",
+    "image": "https://artbypaulrayvibes.com/og-image.jpg",
+    "description": "Professional creative photographer specializing in lifestyle, events, and portraits.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "NG"
+    },
+    "priceRange": "$$",
+    "telephone": "+2348168847345"
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
         className="min-h-screen bg-gradient-to-b from-surface-light to-gray-50 dark:from-surface-dark dark:to-brand-soft text-gray-900 dark:text-gray-100 antialiased"
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ThemeProvider>
           <ToastProvider />
           <Nav />

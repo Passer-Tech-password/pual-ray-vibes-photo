@@ -1,71 +1,45 @@
 import { NextResponse } from "next/server";
-import { adminAuth, adminStorage } from "@/lib/firebase-admin";
+import cloudinary from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
-    const cookie = req.headers.get("cookie") ?? "";
-    const match = cookie.match(/(?:^|;\s*)firebase-token=([^;]+)/);
-    const token = match ? match[1] : null;
+    const { searchParams } = new URL(req.url);
+    const section = searchParams.get("section");
 
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Construct folder path
+    // If section is provided, look in gallery/{section}
+    // If NOT provided, we might want to list everything under gallery/ 
+    // But cloudinary.api.resources prefix is flat. 
+    
+    let folder = "gallery";
+    if (section && section !== "all") {
+      folder = `gallery/${section}`;
     }
 
-    try {
-      await adminAuth.verifyIdToken(token);
-    } catch (authError) {
-      console.error("Auth verification failed:", authError);
-      return NextResponse.json({ error: "Invalid Token" }, { status: 401 });
-    }
-
-    // Check if storage is ready
-    if (typeof adminStorage.getFiles !== "function") {
-       console.error("Storage not initialized properly");
-       return NextResponse.json({ error: "Storage Configuration Error" }, { status: 500 });
-    }
-
-    const [files] = await adminStorage.getFiles();
-
-    const images = files.map((file) => {
-      const name = file.name; // e.g., "gallery/lifestyle/123.jpg" or "ceo/123.jpg"
-      const parts = name.split("/");
-      
-      let section = "uncategorized";
-      if (parts[0] === "gallery" && parts.length > 2) {
-        section = parts[1];
-      } else if (parts[0] === "ceo") {
-        section = "ceo";
-      } else if (parts.length > 1) {
-        section = parts[0];
-      }
-
-      const url = `https://storage.googleapis.com/${adminStorage.name}/${name}`;
-      
-      return {
-        id: name,
-        url,
-        section
-      };
+    // Fetch from Cloudinary
+    // Note: To browse folders recursively or by specific folder, use expressions or prefix
+    // Prefix matches the start of public_id. "gallery/" matches "gallery/lifestyle/..."
+    const result = await cloudinary.api.resources({
+      type: "upload",
+      prefix: folder, 
+      max_results: 100,
+      sort_by: "created_at",
+      direction: "desc",
     });
 
-    // Sort by time (newest first) based on filename timestamp if possible, or just reverse
-    // Filenames are section/timestamp-name
-    images.sort((a, b) => {
-      // Try to extract timestamp
-      const getTs = (name: string) => {
-        const parts = name.split("/");
-        if (parts.length < 2) return 0;
-        const ts = parseInt(parts[1].split("-")[0]);
-        return isNaN(ts) ? 0 : ts;
-      };
-      return getTs(b.id) - getTs(a.id);
-    });
+    const images = result.resources.map((res: any) => ({
+      id: res.public_id,
+      url: res.secure_url,
+      width: res.width,
+      height: res.height,
+      createdAt: res.created_at,
+    }));
 
     return NextResponse.json({ images });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Gallery list error:", err);
-    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Internal Error" }, { status: 500 });
   }
 }

@@ -1,101 +1,14 @@
-"use client";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import TestimonialsCarousel from "@/components/TestimonialsCarousel";
+import { Metadata } from 'next';
+import HomeClient from "@/components/HomeClient";
+
+export const metadata: Metadata = {
+  title: "Arts.by Paul-Ray-vibes | Home",
+  description: "Welcome to Arts.by Paul-Ray-vibes. Discover professional lifestyle, fashion, and event photography that captures the essence of every moment.",
+  alternates: {
+    canonical: 'https://artbypaulrayvibes.com',
+  },
+};
 
 export default function HomePage() {
-  return (
-    <>
-      <section className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9 }}
-          className="text-4xl md:text-6xl font-extrabold leading-tight text-brand dark:text-white"
-        >
-          Artsbypaulray-Lifestyle & Fashion Photographer
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="mt-4 max-w-2xl text-gray-600 dark:text-gray-300"
-        >
-          "Timeless imagery defined by color, depth, and story."
-        </motion.p>
-
-        <motion.div
-          initial={{ scale: 0.96, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-8 flex gap-4 flex-wrap justify-center"
-        >
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link
-              href="/booking"
-              className="btn btn-primary"
-            >
-              Book a Session
-            </Link>
-          </motion.div>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link
-              href="/gallery"
-              className="btn btn-outline"
-            >
-              Explore Gallery
-            </Link>
-          </motion.div>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link
-              href="/about-Us"
-              className="btn btn-ghost"
-            >
-              About Us
-            </Link>
-          </motion.div>
-        </motion.div>
-
-        {/* small animated hero images row */}
-        <motion.div
-          className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 w-full"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: {},
-          }}
-        >
-          {[
-            "/sample/1.jpg",
-            "/sample/2.jpg",
-            "/sample/3.jpg",
-            "/sample/4.jpg",
-          ].map((src, i) => (
-            <motion.img
-              key={i}
-              src={src}
-              alt={`Portfolio preview ${i + 1}`}
-              className="w-full h-36 sm:h-40 md:h-44 object-cover rounded-lg shadow-lg"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 + i * 0.12, duration: 0.6 }}
-            />
-          ))}
-        </motion.div>
-      </section>
-
-      <TestimonialsCarousel />
-    </>
-  );
+  return <HomeClient />;
 }
