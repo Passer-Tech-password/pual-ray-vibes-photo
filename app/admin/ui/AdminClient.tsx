@@ -29,7 +29,7 @@ type GalleryImage = {
   isBase64?: boolean;
 };
 
-const SECTIONS = ["lifestyle", "event", "lovelife", "family", "outdoor", "ceo"];
+const SECTIONS = ["lifestyle", "event", "lovelife", "family", "outdoor", "portrait", "ceo"];
 
 export default function AdminClient() {
   const [images, setImages] = useState<GalleryImage[]>([]);
@@ -203,6 +203,7 @@ export default function AdminClient() {
         <option value="lovelife">Love Life</option>
         <option value="family">Family</option>
         <option value="outdoor">Outdoor</option>
+        <option value="portrait">Portrait</option>
         <option value="ceo">CEO Profile</option>
       </select>
 

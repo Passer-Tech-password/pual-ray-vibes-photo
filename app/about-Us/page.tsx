@@ -23,17 +23,21 @@ export default function AboutUs() {
       // 1. Try Firestore first (Fallback)
       try {
         const q = query(
-          collection(db, "images"),
-          where("section", "==", "ceo"),
-          orderBy("createdAt", "desc"),
-          limit(1)
-        );
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          setCeoImage(doc.data().url);
-          return; // Found it, no need to check storage
-        }
+            collection(db, "images"),
+            where("section", "==", "ceo")
+          );
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            // Client-side sort to get latest
+            const docs = querySnapshot.docs.map(d => d.data());
+            docs.sort((a, b) => {
+              const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              return dateB - dateA;
+            });
+            setCeoImage(docs[0].url);
+            return; // Found it, no need to check storage
+          }
       } catch (err) {
         console.warn("Firestore CEO fetch failed:", err);
       }
@@ -236,8 +240,6 @@ export default function AboutUs() {
             </button>
           </div>
         </motion.div>
-        <div><p>
-        </p></div>
       </div>
 
       <PolicyModal

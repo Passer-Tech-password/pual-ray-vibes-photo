@@ -9,7 +9,7 @@ import GalleryGrid from "../../components/GalleryGrid";
 const db = getFirestore();
 
 export default function GalleryPage() {
-  const [images, setImages] = useState<{ url: string; path?: string }[]>([]);
+  const [images, setImages] = useState<{ url: string; path?: string; createdAt?: string }[]>([]);
   const [category, setCategory] = useState("lifestyle");
 
   useEffect(() => {
@@ -17,21 +17,21 @@ export default function GalleryPage() {
   }, [category]);
 
   async function fetchImages() {
-    const fetchedImages: { url: string; path?: string }[] = [];
+    const fetchedImages: { url: string; path?: string; createdAt?: string }[] = [];
 
     // 1. Fetch from Firestore (Fallback)
     try {
       // Query images by section
       const q = query(
         collection(db, "images"),
-        where("section", "==", category),
-        orderBy("createdAt", "desc")
+        where("section", "==", category)
       );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         fetchedImages.push({
           url: doc.data().url,
-          path: doc.id
+          path: doc.id,
+          createdAt: doc.data().createdAt // Capture for sorting
         });
       });
     } catch (err) {
@@ -52,6 +52,13 @@ export default function GalleryPage() {
     } catch (err) {
       console.warn("Storage fetch failed:", err);
     }
+
+    // Client-side Sort (Newest first)
+    fetchedImages.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA; // Descending
+    });
 
     setImages(fetchedImages);
   }

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
+import { adminDB } from "@/lib/firebase-admin";
+
+export const dynamic = "force-dynamic";
 
 interface BookingRequest {
   name: string;
@@ -15,8 +18,11 @@ interface BookingRequest {
   duration: string;
 }
 
-// In-memory storage for bookings (Note: This will reset when the server restarts. Use a database for persistence.)
-const bookings: { date: string; time: string }[] = [];
+// Helper to check if a date string matches requested date (ignoring time)
+function isSameDate(dateStr: string, requestedDate: Date) {
+  const d = new Date(dateStr);
+  return d.toDateString() === requestedDate.toDateString();
+}
 
 class BookingRequestBuilder {
   private data: Partial<BookingRequest> = {};
@@ -210,14 +216,43 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Invalid date" }, { status: 400 });
   }
 
-  const bookedSlots = bookings
-    .filter(b => {
-      const bDate = new Date(b.date);
-      return bDate.toDateString() === requestedDate.toDateString();
-    })
-    .map(b => b.time);
+  try {
+    // Query Firestore for bookings on this date
+    // Note: Storing date as ISO string allows string comparison if format matches,
+    // but better to query range or filter in code if volume is low.
+    // For now, let's fetch all future bookings or bookings near this date if possible.
+    // Simpler: Fetch ALL bookings (if small scale) or use range query.
+    // Let's use a range query for the whole day.
+    
+    const startOfDay = new Date(requestedDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(requestedDate);
+    endOfDay.setHours(23, 59, 59, 999);
 
-  return NextResponse.json({ bookedSlots });
+    // If dates are stored as ISO strings in "date" field:
+    // We can't easily range query ISO strings unless they are strictly formatted.
+    // However, our BookingRequest saves "date" as provided by frontend (likely ISO).
+    // Let's assume we filter client-side or fetch strict matches if exact string matches.
+    // But frontend sends "2023-10-25T..." usually.
+    // Let's try to find bookings where the date matches string-wise?
+    // Safer: Fetch bookings collection and filter. (Scale warning: okay for small business).
+    
+    const snapshot = await adminDB.collection("bookings").get();
+    const bookedSlots: string[] = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.date && isSameDate(data.date, requestedDate)) {
+        bookedSlots.push(data.time);
+      }
+    });
+
+    return NextResponse.json({ bookedSlots });
+  } catch (error) {
+    console.error("Failed to fetch bookings:", error);
+    return NextResponse.json({ bookedSlots: [] }); // Fail graceful
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -237,12 +272,17 @@ export async function POST(request: NextRequest) {
     const bookingDate = new Date(body.date);
 
     // Check for double booking
-    const isBooked = bookings.some(b => {
-      const bDate = new Date(b.date);
-      return (
-        bDate.toDateString() === bookingDate.toDateString() &&
-        b.time === body.time
-      );
+    const snapshot = await adminDB.collection("bookings").get();
+    let isBooked = false;
+    
+    snapshot.forEach(doc => {
+      const b = doc.data();
+      if (b.date && b.time) {
+         const bDate = new Date(b.date);
+         if (bDate.toDateString() === bookingDate.toDateString() && b.time === body.time) {
+           isBooked = true;
+         }
+      }
     });
 
     if (isBooked) {
@@ -267,14 +307,29 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
 
+    // Save booking to Firestore
+    try {
+      await adminDB.collection("bookings").add({
+        ...body,
+        createdAt: new Date().toISOString()
+      });
+    } catch (dbError) {
+      console.error("Database save failed:", dbError);
+      // We continue to send email even if DB fails? Or fail?
+      // Better to fail if DB is critical, but email is also critical.
+      // Let's log and continue, or return error. 
+      // If DB fails, we probably shouldn't confirm the booking.
+      return NextResponse.json(
+        { error: "Failed to save booking" },
+        { status: 500 }
+      );
+    }
+
     try {
       await sendBookingEmails(body, bookingDate);
     } catch (mailError) {
       console.error("Email sending failed:", mailError);
     }
-
-    // Save booking to in-memory storage
-    bookings.push({ date: body.date, time: body.time });
 
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 1000));
