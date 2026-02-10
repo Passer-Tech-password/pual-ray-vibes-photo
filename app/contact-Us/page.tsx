@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Contact Us | Arts.by Paul-Ray-vibes",
   description: "Get in touch with Arts.by Paul-Ray-vibes for bookings, inquiries, and collaborations. Let's create beautiful memories together.",
   alternates: {
-    canonical: 'https://artbypaulrayvibes.com/contact-Us',
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://artbypaulrayvibes.com'}/contact-Us`,
   },
 };
 

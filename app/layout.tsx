@@ -63,18 +63,21 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://artbypaulrayvibes.com";
+  
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     "name": "Arts.by Paul-Ray-vibes",
-    "image": "https://artbypaulrayvibes.com/og-image.jpg",
+    "image": `${baseUrl}/og-image.jpg`,
     "description": "Professional creative photographer specializing in lifestyle, events, and portraits.",
     "address": {
       "@type": "PostalAddress",
       "addressCountry": "NG"
     },
     "priceRange": "$$",
-    "telephone": "+2348168847345"
+    "telephone": "+2348168847345",
+    "url": baseUrl
   };
 
   return (

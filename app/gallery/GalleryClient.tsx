@@ -17,7 +17,19 @@ export default function GalleryClient() {
       const data = await res.json();
       
       if (data.images) {
-        setImages(data.images);
+        // Generate better alt text from the public_id or section
+        const imagesWithAlt = data.images.map((img: any) => {
+          // Attempt to derive a readable name from the ID (e.g. "gallery/lifestyle/my-photo" -> "my photo")
+          const parts = (img.id || "").split("/");
+          const fileName = parts[parts.length - 1] || "";
+          const readableName = fileName.replace(/[-_]/g, " ").replace(/\.[^/.]+$/, ""); // remove extension and separators
+          
+          return {
+            ...img,
+            alt: `${category} photography - ${readableName} by Arts.by Paul-Ray-vibes`,
+          };
+        });
+        setImages(imagesWithAlt);
       }
     } catch (err) {
       console.warn("Fetch failed:", err);
