@@ -8,25 +8,35 @@ import PolicyModal from "@/components/PolicyModal";
 export default function AboutClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showPolicy, setShowPolicy] = useState(false);
-  const [ceoImage, setCeoImage] = useState("/images/ceo.jpg");
+  const [ceoImage, setCeoImage] = useState("https://ui-avatars.com/api/?name=CEO&background=random&size=512");
+  const [heroImage, setHeroImage] = useState("https://ui-avatars.com/api/?name=Studio&background=random&size=1024");
   
   const whatsappLink =
     "https://wa.me/2348168847345?text=Hello%20I%20would%20like%20to%20book%20a%20photoshoot";
 
   useEffect(() => {
-    async function fetchCeoImage() {
+    async function fetchImages() {
       try {
-        const res = await fetch("/api/gallery?section=ceo");
-        const data = await res.json();
-        if (data.images && data.images.length > 0) {
-          // Cloudinary returns newest first, so [0] is the latest
-          setCeoImage(data.images[0].url);
+        // Fetch CEO image
+        const ceoRes = await fetch("/api/gallery?section=ceo");
+        const ceoData = await ceoRes.json();
+        if (ceoData.images && ceoData.images.length > 0) {
+          setCeoImage(ceoData.images[0].url);
+        }
+
+        // Fetch Hero image (e.g. from lifestyle or portrait)
+        const heroRes = await fetch("/api/gallery?section=lifestyle");
+        const heroData = await heroRes.json();
+        if (heroData.images && heroData.images.length > 0) {
+          // Pick a random one
+          const randomImg = heroData.images[Math.floor(Math.random() * heroData.images.length)];
+          setHeroImage(randomImg.url);
         }
       } catch (err) {
-        console.warn("Error fetching CEO image:", err);
+        console.warn("Error fetching images:", err);
       }
     }
-    fetchCeoImage();
+    fetchImages();
   }, []);
 
   const handleWhatsAppClick = (e: React.MouseEvent) => {
@@ -67,7 +77,7 @@ export default function AboutClient() {
 
             <div className="relative w-full h-[280px] md:h-[360px] rounded-2xl overflow-hidden">
               <Image
-                src="/images/about-hero.jpg"
+                src={heroImage}
                 alt="Photography studio"
                 fill
                 className="object-cover"

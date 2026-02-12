@@ -20,7 +20,7 @@ const testimonials: Testimonial[] = [
     role: "Bride",
     content: "Paul captured our wedding day perfectly! His attention to detail and ability to capture genuine emotions is incredible. Every photo tells a story, and we couldn't be happier with the results.",
     rating: 5,
-    image: "/testimonials/sarah.jpg",
+    image: "https://ui-avatars.com/api/?name=Sarah+Johnson&background=random",
     date: "December 2024"
   },
   {
@@ -29,7 +29,7 @@ const testimonials: Testimonial[] = [
     role: "Business Owner",
     content: "Professional, creative, and punctual. Paul did an amazing job with our corporate headshots and product photography. Highly recommend for any business photography needs!",
     rating: 5,
-    image: "/testimonials/michael.jpg",
+    image: "https://ui-avatars.com/api/?name=Michael+Chen&background=random",
     date: "November 2024"
   },
   {
@@ -38,7 +38,7 @@ const testimonials: Testimonial[] = [
     role: "Family Client",
     content: "We had a wonderful family photo session with Paul. He made everyone feel comfortable and captured beautiful, natural moments. The photos are treasures we'll cherish forever.",
     rating: 5,
-    image: "/testimonials/amanda.jpg",
+    image: "https://ui-avatars.com/api/?name=Amanda+Rodriguez&background=random",
     date: "October 2024"
   },
   {
@@ -47,7 +47,7 @@ const testimonials: Testimonial[] = [
     role: "Event Organizer",
     content: "Paul covered our annual charity gala and exceeded all expectations. His ability to work in various lighting conditions and capture the essence of the event was remarkable.",
     rating: 5,
-    image: "/testimonials/david.jpg",
+    image: "https://ui-avatars.com/api/?name=David+Thompson&background=random",
     date: "September 2024"
   },
   {
@@ -56,7 +56,7 @@ const testimonials: Testimonial[] = [
     role: "Model",
     content: "Working with Paul was an absolute pleasure. His direction during the shoot was clear and professional, and the final images were stunning. I would work with him again in a heartbeat!",
     rating: 5,
-    image: "/testimonials/emma.jpg",
+    image: "https://ui-avatars.com/api/?name=Emma+Williams&background=random",
     date: "August 2024"
   }
 ];

@@ -1,17 +1,62 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 
-// Wrapper for next/image to use with Framer Motion
-const MotiImage = motion(Image);
+const CATEGORIES = ["lifestyle", "event", "lovelife", "family", "outdoor", "portrait", "ceo"];
+
+interface GalleryImage {
+  id: string;
+  url: string;
+  width: number;
+  height: number;
+}
 
 export default function HomeClient() {
+  const [featuredImages, setFeaturedImages] = useState<Record<string, GalleryImage[]>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAllCategories() {
+      try {
+        const results = await Promise.all(
+          CATEGORIES.map(async (category) => {
+            const res = await fetch(`/api/gallery?section=${category}`);
+            const data = await res.json();
+            return {
+              category,
+              images: data.images ? data.images.slice(0, 5) : [],
+            };
+          })
+        );
+
+        const newImages: Record<string, GalleryImage[]> = {};
+        results.forEach((item) => {
+          if (item.images.length > 0) {
+            newImages[item.category] = item.images;
+          }
+        });
+
+        setFeaturedImages(newImages);
+      } catch (error) {
+        console.error("Failed to fetch featured images", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAllCategories();
+  }, []);
+
+  // Get a flat list of images for the hero section (mix of categories)
+  const heroImages = Object.values(featuredImages).flat().sort(() => 0.5 - Math.random()).slice(0, 4);
+
   return (
     <>
-      <section className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+      <section className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-20">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -53,39 +98,92 @@ export default function HomeClient() {
           </motion.div>
         </motion.div>
 
-        {/* small animated hero images row */}
-        <motion.div
-          className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 w-full"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: {},
-          }}
-        >
-          {[
-            "/sample/1.jpg",
-            "/sample/2.jpg",
-            "/sample/3.jpg",
-            "/sample/4.jpg",
-          ].map((src, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 + i * 0.12, duration: 0.6 }}
-              className="relative w-full h-36 sm:h-40 md:h-44 rounded-lg shadow-lg overflow-hidden"
-            >
-              <Image
-                src={src}
-                alt={`Portfolio preview ${i + 1} - Arts.by Paul-Ray-vibes`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Dynamic Hero Images Row */}
+        {heroImages.length > 0 && (
+          <motion.div
+            className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-6xl"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {},
+            }}
+          >
+            {heroImages.map((img, i) => (
+              <motion.div
+                key={img.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 + i * 0.12, duration: 0.6 }}
+                className="relative w-full h-36 sm:h-40 md:h-44 rounded-lg shadow-lg overflow-hidden"
+              >
+                <Image
+                  src={img.url}
+                  alt={`Portfolio preview - ${img.id}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </section>
+
+      {/* Featured Collections Section */}
+      <section className="py-16 bg-white dark:bg-gray-800">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+            Featured Collections
+          </h2>
+          
+          {loading ? (
+             <div className="flex justify-center p-10">
+               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
+             </div>
+          ) : (
+            <div className="space-y-16">
+              {CATEGORIES.map((category) => {
+                const images = featuredImages[category];
+                if (!images || images.length === 0) return null;
+
+                return (
+                  <div key={category} className="flex flex-col gap-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-semibold capitalize text-gray-800 dark:text-gray-200">
+                        {category}
+                      </h3>
+                      <Link 
+                        href={`/gallery?category=${category}`}
+                        className="text-brand hover:underline text-sm font-medium"
+                      >
+                        View All
+                      </Link>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                      {images.map((img) => (
+                        <motion.div
+                          key={img.id}
+                          whileHover={{ y: -5 }}
+                          className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md"
+                        >
+                          <Image
+                            src={img.url}
+                            alt={`${category} photo`}
+                            fill
+                            className="object-cover transition-transform duration-500 hover:scale-110"
+                            sizes="(max-width: 768px) 50vw, 20vw"
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </section>
 
       <TestimonialsCarousel />
