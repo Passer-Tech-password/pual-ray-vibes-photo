@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { GalleryImage } from "@/types";
 
 /* ✅ Properly typed props */
@@ -22,6 +22,18 @@ export default function Lightbox({
   onPrev,
   onNext,
 }: LightboxProps) {
+  // Use refs to keep handlers stable for the effect
+  const onCloseRef = useRef(onClose);
+  const onPrevRef = useRef(onPrev);
+  const onNextRef = useRef(onNext);
+
+  // Update refs whenever props change
+  useEffect(() => {
+    onCloseRef.current = onClose;
+    onPrevRef.current = onPrev;
+    onNextRef.current = onNext;
+  }, [onClose, onPrev, onNext]);
+
   useEffect(() => {
     if (!open) return;
 
@@ -29,9 +41,9 @@ export default function Lightbox({
     document.body.style.overflow = "hidden";
 
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") onPrev();
-      if (e.key === "ArrowRight") onNext();
+      if (e.key === "Escape") onCloseRef.current();
+      if (e.key === "ArrowLeft") onPrevRef.current();
+      if (e.key === "ArrowRight") onNextRef.current();
     }
 
     window.addEventListener("keydown", onKey);
@@ -40,7 +52,7 @@ export default function Lightbox({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = originalOverflow;
     };
-  }, [open, onClose, onPrev, onNext]);
+  }, [open]); // Dependencies reduced to just 'open' to prevent scroll flicker
 
   return (
     <AnimatePresence>
