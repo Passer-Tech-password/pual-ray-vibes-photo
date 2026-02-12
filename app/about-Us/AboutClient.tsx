@@ -16,29 +16,29 @@ export default function AboutClient() {
 
   useEffect(() => {
     async function fetchImages() {
-      try {
-        const [ceoRes, heroRes] = await Promise.all([
-          fetch("/api/gallery?section=ceo"),
-          fetch("/api/gallery?section=lifestyle"),
-        ]);
+      const [ceoResult, heroResult] = await Promise.allSettled([
+        fetch("/api/gallery?section=ceo").then((res) => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        }),
+        fetch("/api/gallery?section=lifestyle").then((res) => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        }),
+      ]);
 
-        const [ceoData, heroData] = await Promise.all([
-          ceoRes.json(),
-          heroRes.json(),
-        ]);
+      if (ceoResult.status === "fulfilled" && ceoResult.value.images?.length > 0) {
+        setCeoImage(ceoResult.value.images[0].url);
+      } else if (ceoResult.status === "rejected") {
+        console.warn("Failed to fetch CEO image:", ceoResult.reason);
+      }
 
-        if (ceoData.images && ceoData.images.length > 0) {
-          setCeoImage(ceoData.images[0].url);
-        }
-
-        if (heroData.images && heroData.images.length > 0) {
-          // Pick a random one
-          const randomImg =
-            heroData.images[Math.floor(Math.random() * heroData.images.length)];
-          setHeroImage(randomImg.url);
-        }
-      } catch (err) {
-        console.warn("Error fetching images:", err);
+      if (heroResult.status === "fulfilled" && heroResult.value.images?.length > 0) {
+        const images = heroResult.value.images;
+        const randomImg = images[Math.floor(Math.random() * images.length)];
+        setHeroImage(randomImg.url);
+      } else if (heroResult.status === "rejected") {
+        console.warn("Failed to fetch Hero image:", heroResult.reason);
       }
     }
     fetchImages();

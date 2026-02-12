@@ -17,6 +17,7 @@ interface GalleryImage {
 
 export default function HomeClient() {
   const [featuredImages, setFeaturedImages] = useState<Record<string, GalleryImage[]>>({});
+  const [heroImages, setHeroImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,6 +42,16 @@ export default function HomeClient() {
         });
 
         setFeaturedImages(newImages);
+        
+        // Also set hero images here to avoid extra render cycle
+        if (Object.keys(newImages).length > 0) {
+          setHeroImages(
+            Object.values(newImages)
+              .flat()
+              .sort(() => 0.5 - Math.random())
+              .slice(0, 4)
+          );
+        }
       } catch (error) {
         console.error("Failed to fetch featured images", error);
       } finally {
@@ -50,20 +61,6 @@ export default function HomeClient() {
 
     fetchAllCategories();
   }, []);
-
-  // Get a flat list of images for the hero section (mix of categories)
-  const [heroImages, setHeroImages] = useState<GalleryImage[]>([]);
-
-  useEffect(() => {
-    if (Object.keys(featuredImages).length > 0) {
-      setHeroImages(
-        Object.values(featuredImages)
-          .flat()
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 4)
-      );
-    }
-  }, [featuredImages]);
 
   return (
     <>
