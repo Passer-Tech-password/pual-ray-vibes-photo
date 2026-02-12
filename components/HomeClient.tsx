@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 
-const CATEGORIES = ["lifestyle", "event", "lovelife", "family", "outdoor", "portrait", "ceo"];
+const CATEGORIES = ["lifestyle", "event", "lovelife", "family", "outdoor", "portrait"];
 
 interface GalleryImage {
   id: string;
