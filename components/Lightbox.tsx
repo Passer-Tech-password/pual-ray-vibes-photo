@@ -23,11 +23,10 @@ export default function Lightbox({
   onNext,
 }: LightboxProps) {
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -35,10 +34,11 @@ export default function Lightbox({
       if (e.key === "ArrowRight") onNext();
     }
 
-    if (open) window.addEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey);
+
     return () => {
       window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      document.body.style.overflow = originalOverflow;
     };
   }, [open, onClose, onPrev, onNext]);
 

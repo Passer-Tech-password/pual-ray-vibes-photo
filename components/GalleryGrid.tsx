@@ -2,12 +2,7 @@
 import { useState } from "react";
 import Lightbox from "./Lightbox";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface GalleryImage {
-  url: string;
-  path?: string;
-  alt?: string;
-}
+import { GalleryImage } from "@/types";
 
 interface GalleryGridProps {
   images: GalleryImage[];

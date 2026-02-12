@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import GalleryGrid from "../../components/GalleryGrid";
+import { GalleryImage } from "@/types";
 
 export default function GalleryClient() {
-  const [images, setImages] = useState<{ url: string; path?: string; createdAt?: string }[]>([]);
+  const [images, setImages] = useState<GalleryImage[]>([]);
   const [category, setCategory] = useState("lifestyle");
 
   useEffect(() => {

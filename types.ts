@@ -5,4 +5,5 @@ export interface GalleryImage {
   height: number;
   alt?: string;
   path?: string;
+  createdAt?: string;
 }
