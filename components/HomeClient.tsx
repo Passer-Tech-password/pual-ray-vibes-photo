@@ -52,7 +52,18 @@ export default function HomeClient() {
   }, []);
 
   // Get a flat list of images for the hero section (mix of categories)
-  const heroImages = Object.values(featuredImages).flat().sort(() => 0.5 - Math.random()).slice(0, 4);
+  const [heroImages, setHeroImages] = useState<GalleryImage[]>([]);
+
+  useEffect(() => {
+    if (Object.keys(featuredImages).length > 0) {
+      setHeroImages(
+        Object.values(featuredImages)
+          .flat()
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 4)
+      );
+    }
+  }, [featuredImages]);
 
   return (
     <>

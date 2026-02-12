@@ -17,19 +17,24 @@ export default function AboutClient() {
   useEffect(() => {
     async function fetchImages() {
       try {
-        // Fetch CEO image
-        const ceoRes = await fetch("/api/gallery?section=ceo");
-        const ceoData = await ceoRes.json();
+        const [ceoRes, heroRes] = await Promise.all([
+          fetch("/api/gallery?section=ceo"),
+          fetch("/api/gallery?section=lifestyle"),
+        ]);
+
+        const [ceoData, heroData] = await Promise.all([
+          ceoRes.json(),
+          heroRes.json(),
+        ]);
+
         if (ceoData.images && ceoData.images.length > 0) {
           setCeoImage(ceoData.images[0].url);
         }
 
-        // Fetch Hero image (e.g. from lifestyle or portrait)
-        const heroRes = await fetch("/api/gallery?section=lifestyle");
-        const heroData = await heroRes.json();
         if (heroData.images && heroData.images.length > 0) {
           // Pick a random one
-          const randomImg = heroData.images[Math.floor(Math.random() * heroData.images.length)];
+          const randomImg =
+            heroData.images[Math.floor(Math.random() * heroData.images.length)];
           setHeroImage(randomImg.url);
         }
       } catch (err) {
