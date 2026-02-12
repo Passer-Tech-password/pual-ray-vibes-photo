@@ -2,6 +2,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Nav from "@/components/Navbar";
 import ToastProvider from "@/components/ToastProvider";
+import BackgroundAnimation from "@/components/BackgroundAnimation";
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://artbypaulrayvibes.com"),
@@ -91,6 +92,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeProvider>
+          <BackgroundAnimation />
           <ToastProvider />
           <Nav />
           <main className="pt-20">

@@ -1,24 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
+import Lightbox from "@/components/Lightbox";
+import { GalleryImage } from "@/types";
 
 const CATEGORIES = ["lifestyle", "event", "lovelife", "family", "outdoor", "portrait"];
-
-interface GalleryImage {
-  id: string;
-  url: string;
-  width: number;
-  height: number;
-}
 
 export default function HomeClient() {
   const [featuredImages, setFeaturedImages] = useState<Record<string, GalleryImage[]>>({});
   const [heroImages, setHeroImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxImages, setLightboxImages] = useState<GalleryImage[]>([]);
+
+  const handlePrev = useCallback(() => {
+    setLightboxIndex((i) => (i === 0 ? lightboxImages.length - 1 : i - 1));
+  }, [lightboxImages]);
+
+  const handleNext = useCallback(() => {
+    setLightboxIndex((i) => (i === lightboxImages.length - 1 ? 0 : i + 1));
+  }, [lightboxImages]);
 
   useEffect(() => {
     async function fetchAllCategories() {
@@ -29,7 +37,7 @@ export default function HomeClient() {
             const data = await res.json();
             return {
               category,
-              images: data.images ? data.images.slice(0, 5) : [],
+              images: data.images ? data.images.slice(0, 10) : [],
             };
           })
         );
@@ -170,11 +178,17 @@ export default function HomeClient() {
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                      {images.map((img) => (
-                        <motion.div
+                      {images.map((img, index) => (
+                        <motion.button
                           key={img.id}
                           whileHover={{ y: -5 }}
-                          className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md"
+                          className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md cursor-pointer w-full p-0 border-0 focus:outline-none focus:ring-2 focus:ring-brand"
+                          onClick={() => {
+                            setLightboxImages(images);
+                            setLightboxIndex(index);
+                            setLightboxOpen(true);
+                          }}
+                          aria-label={`View ${category} image ${index + 1}`}
                         >
                           <Image
                             src={img.url}
@@ -183,7 +197,7 @@ export default function HomeClient() {
                             className="object-cover transition-transform duration-500 hover:scale-110"
                             sizes="(max-width: 768px) 50vw, 20vw"
                           />
-                        </motion.div>
+                        </motion.button>
                       ))}
                     </div>
                   </div>
@@ -195,6 +209,15 @@ export default function HomeClient() {
       </section>
 
       <TestimonialsCarousel />
+
+      <Lightbox
+        open={lightboxOpen}
+        index={lightboxIndex}
+        images={lightboxImages}
+        onClose={() => setLightboxOpen(false)}
+        onPrev={handlePrev}
+        onNext={handleNext}
+      />
     </>
   );
 }

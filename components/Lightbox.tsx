@@ -2,13 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
-
-/* ✅ Image type must match GalleryGrid */
-interface GalleryImage {
-  url: string;
-  path?: string;
-  alt?: string;
-}
+import { GalleryImage } from "@/types";
 
 /* ✅ Properly typed props */
 interface LightboxProps {
@@ -29,6 +23,12 @@ export default function Lightbox({
   onNext,
 }: LightboxProps) {
   useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft") onPrev();
@@ -36,10 +36,11 @@ export default function Lightbox({
     }
 
     if (open) window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
   }, [open, onClose, onPrev, onNext]);
-
-  if (!open) return null;
 
   return (
     <AnimatePresence>
