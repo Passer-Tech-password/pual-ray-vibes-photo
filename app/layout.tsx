@@ -1,4 +1,5 @@
 import "./globals.css";
+import Image from "next/image";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Nav from "@/components/Navbar";
 import ToastProvider from "@/components/ToastProvider";
@@ -100,8 +101,15 @@ export default function RootLayout({
           </main>
           <footer className="mt-16 border-t border-gray-200 dark:border-white/10">
             <div className="container-width py-8 flex items-center justify-between">
-              <span className="font-semibold text-brand dark:text-white">
-                Arts.by Paul-Ray-vibes
+              <span className="flex items-center gap-2 font-semibold text-brand dark:text-white">
+                <Image
+                  src="/icon.png"
+                  alt="Arts.by Paul-Ray-vibes logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain"
+                />
+                <span className="sr-only">Arts.by Paul-Ray-vibes</span>
               </span>
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 © {new Date().getFullYear()} All rights reserved

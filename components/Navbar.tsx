@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 import {
@@ -29,7 +30,6 @@ export default function Navbar() {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
-          {/* Mobile Menu Toggle */}
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none">
               <Bars3Icon className="block size-6 group-data-[open]:hidden" />
@@ -37,13 +37,20 @@ export default function Navbar() {
             </DisclosureButton>
           </div>
 
-          {/* Brand + Desktop Menu */}
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <Link
               href="/"
-              className="text-lg md:text-xl font-semibold tracking-tight text-brand dark:text-white"
+              className="flex items-center text-lg md:text-xl font-semibold tracking-tight text-brand dark:text-white"
             >
-              Arts.by_Paul-Ray-Vibes
+              <Image
+                src="/icon.png"
+                alt="Arts.by Paul-Ray-vibes logo"
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+                priority
+              />
+              <span className="sr-only">Arts.by Paul-Ray-vibes</span>
             </Link>
 
             <div className="hidden sm:ml-8 sm:flex space-x-6">
@@ -75,15 +82,12 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Right Section */}
           <div className="absolute inset-y-0 right-0 flex items-center gap-3 pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {/* Theme Toggle */}
             <ThemeToggle />
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu (Disclosure Panel) */}
       <DisclosurePanel className="sm:hidden bg-white/70 dark:bg-black/40 backdrop-blur border-t border-gray-200 dark:border-gray-700">
         <div className="space-y-2 px-4 py-3">
           {navLinks.map(link => {
