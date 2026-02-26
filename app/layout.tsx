@@ -105,14 +105,14 @@ export default function RootLayout({
                 <div className="relative h-8 w-8">
                   <Image
                     src="/logo-light.png"
-                    alt="Arts.by Paul-Ray-vibes logo"
+                    alt="Arts.by Paul-Ray-vibes logo (light mode)"
                     width={32}
                     height={32}
                     className="h-8 w-8 object-contain block dark:hidden"
                   />
                   <Image
                     src="/logo-dark.png"
-                    alt="Arts.by Paul-Ray-vibes logo"
+                    alt="Arts.by Paul-Ray-vibes logo (dark mode)"
                     width={32}
                     height={32}
                     className="h-8 w-8 object-contain hidden dark:block"
