@@ -102,13 +102,22 @@ export default function RootLayout({
           <footer className="mt-16 border-t border-gray-200 dark:border-white/10">
             <div className="container-width py-8 flex items-center justify-between">
               <span className="flex items-center gap-2 font-semibold text-brand dark:text-white">
-                <Image
-                  src="/icon.png"
-                  alt="Arts.by Paul-Ray-vibes logo"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 object-contain"
-                />
+                <div className="relative h-8 w-8">
+                  <Image
+                    src="/logo-light.png"
+                    alt="Arts.by Paul-Ray-vibes logo"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 object-contain block dark:hidden"
+                  />
+                  <Image
+                    src="/logo-dark.png"
+                    alt="Arts.by Paul-Ray-vibes logo"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 object-contain hidden dark:block"
+                  />
+                </div>
                 <span className="sr-only">Arts.by Paul-Ray-vibes</span>
               </span>
               <span className="text-sm text-gray-600 dark:text-gray-400">

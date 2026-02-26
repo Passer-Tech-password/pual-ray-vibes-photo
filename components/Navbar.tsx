@@ -42,14 +42,24 @@ export default function Navbar() {
               href="/"
               className="flex items-center text-lg md:text-xl font-semibold tracking-tight text-brand dark:text-white"
             >
-              <Image
-                src="/icon.png"
-                alt="Arts.by Paul-Ray-vibes logo"
-                width={32}
-                height={32}
-                className="h-8 w-8 object-contain"
-                priority
-              />
+              <div className="relative h-8 w-8">
+                <Image
+                  src="/logo-light.png"
+                  alt="Arts.by Paul-Ray-vibes logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain block dark:hidden"
+                  priority
+                />
+                <Image
+                  src="/logo-dark.png"
+                  alt="Arts.by Paul-Ray-vibes logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain hidden dark:block"
+                  priority
+                />
+              </div>
               <span className="sr-only">Arts.by Paul-Ray-vibes</span>
             </Link>
 
